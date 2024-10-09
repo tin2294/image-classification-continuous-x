@@ -41,7 +41,7 @@ def create_data_generators(training_dir, validation_dir, batch_size, input_img_s
         eval_aug = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1.0 / 255)
 
         eval_gen = eval_aug.flow_from_directory(
-            training_dir,  # assuming evaluation images are in the training directory
+            training_dir,
             target_size=(input_img_size, input_img_size),
             color_mode="rgb",
             shuffle=False,
@@ -57,11 +57,11 @@ def create_model(input_img_size):
         include_top=False,
         pooling='avg'
     )
-    base_model.trainable = False  # Freeze the base model
+    base_model.trainable = False
 
     model = tf.keras.Sequential([
         base_model,
-        tf.keras.layers.Dense(11, activation='softmax')  # Adjust the number of classes accordingly
+        tf.keras.layers.Dense(11, activation='softmax')
     ])
 
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
