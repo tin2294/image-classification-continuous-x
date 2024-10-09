@@ -1,69 +1,71 @@
-import os
 import numpy as np
-import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping
-from utils import create_data_generators, create_model
+import os
+import matplotlib.pyplot as plt
+from utils import (
+    load_training_labels,
+    plot_sample_images,
+    prepare_data_generators,
+    build_model
+)
 
-# Constants
-BATCH_SIZE = 32
-INPUT_IMG_SIZE = 224
+BATCH_SIZE = 128
+INPUT_IMG_SIZE = 112
+CLASSES = np.array(["Bread", "Dairy product", "Dessert", "Egg", "Fried food",
+                    "Meat", "Noodles/Pasta", "Rice", "Seafood", "Soup",
+                    "Vegetable/Fruit"])
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+base_dir = "data/Food-11"
 
-TRAINING_DIR = os.path.join(BASE_DIR, 'data', 'training')
-VALIDATION_DIR = os.path.join(BASE_DIR, 'data', 'validation')
-EVALUATION_DIR = os.path.join(BASE_DIR, 'data', 'evaluation')
+training_dir = os.path.join(base_dir, "training")
+validation_dir = os.path.join(base_dir, "validation")
+evaluation_dir = os.path.join(base_dir, "evaluation")
 
-N_EPOCHS = 10
+training_images, training_labels = load_training_labels(training_dir)
 
-# Define class labels
-classes = np.array([
-    "Bread", "Dairy product", "Dessert", "Egg", "Fried food",
-    "Meat", "Noodles/Pasta", "Rice", "Seafood", "Soup",
-    "Vegetable/Fruit"
-])
+plot_sample_images(CLASSES, training_labels, training_images, n_samples_per_class=4)
 
-# Check if directories exist before proceeding
-if not os.path.exists(TRAINING_DIR) or not os.path.exists(VALIDATION_DIR) or not os.path.exists(EVALUATION_DIR):
-    raise FileNotFoundError(f"One or more data directories not found: {TRAINING_DIR}, {VALIDATION_DIR}, {EVALUATION_DIR}")
+# Prepare data generators
+training_gen, validation_gen, evaluation_gen = prepare_data_generators(
+    training_dir, validation_dir, evaluation_dir, INPUT_IMG_SIZE, BATCH_SIZE)
 
-# Create data generators
-training_gen, validation_gen = create_data_generators(TRAINING_DIR, VALIDATION_DIR, BATCH_SIZE, INPUT_IMG_SIZE)
+# Build and train model
+model = build_model(INPUT_IMG_SIZE, len(CLASSES))
 
-# Create evaluation generator
-evaluation_gen = create_data_generators(EVALUATION_DIR, EVALUATION_DIR, BATCH_SIZE, INPUT_IMG_SIZE, is_eval=True)
-
-# Prepare the model
-model = create_model(INPUT_IMG_SIZE)
-
-# Define early stopping callback
-early_stop = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
-
-# Train the model
-num_training_samples = training_gen.n
-num_validation_samples = validation_gen.n
+num_training_samples = sum(len(files) for _, _, files in os.walk(training_dir))  # Total number of training images
+num_validation_samples = sum(len(files) for _, _, files in os.walk(validation_dir))  # Total number of validation images
+n_epochs = 10
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
 validation_steps = num_validation_samples // BATCH_SIZE
 
+# Fit the model
 hist = model.fit(
     training_gen,
     steps_per_epoch=steps_per_epoch,
-    epochs=N_EPOCHS,
-    shuffle=True,
+    epochs=n_epochs,
     validation_data=validation_gen,
-    validation_steps=validation_steps,
-    callbacks=[early_stop]
+    validation_steps=validation_steps
 )
 
-# Evaluate the model
-eval_results = model.evaluate(evaluation_gen)
-print(f'Evaluation results: {eval_results}')
+# Plot training history
+plt.figure(figsize=(12, 5))
 
-# Make predictions on evaluation data
-predictions = model.predict(evaluation_gen)
-predicted_classes = np.argmax(predictions, axis=1)
+# Plot Loss
+plt.subplot(1, 2, 1)
+plt.plot(hist.history['loss'], label='Training Loss')
+plt.plot(hist.history['val_loss'], label='Validation Loss')
+plt.title('Loss vs. Epochs')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
 
-# Print predictions with their corresponding class names
-for i in range(len(predicted_classes)):
-    print(f'Image: {evaluation_gen.filenames[i]} - Predicted Class: {classes[predicted_classes[i]]}')
+# Plot Accuracy
+plt.subplot(1, 2, 2)
+plt.plot(hist.history['accuracy'], label='Training Accuracy')
+plt.plot(hist.history['val_accuracy'], label='Validation Accuracy')
+plt.title('Accuracy vs. Epochs')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+
+plt.show()
