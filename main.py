@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping
@@ -6,9 +7,13 @@ from utils import create_data_generators, create_model
 # Constants
 BATCH_SIZE = 32
 INPUT_IMG_SIZE = 224
-TRAINING_DIR = 'data/training/'
-VALIDATION_DIR = 'data/validation/'
-EVALUATION_DIR = 'data/evaluation/'
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+TRAINING_DIR = os.path.join(BASE_DIR, 'data', 'training')
+VALIDATION_DIR = os.path.join(BASE_DIR, 'data', 'validation')
+EVALUATION_DIR = os.path.join(BASE_DIR, 'data', 'evaluation')
+
 N_EPOCHS = 10
 
 # Define class labels
@@ -17,6 +22,10 @@ classes = np.array([
     "Meat", "Noodles/Pasta", "Rice", "Seafood", "Soup",
     "Vegetable/Fruit"
 ])
+
+# Check if directories exist before proceeding
+if not os.path.exists(TRAINING_DIR) or not os.path.exists(VALIDATION_DIR) or not os.path.exists(EVALUATION_DIR):
+    raise FileNotFoundError(f"One or more data directories not found: {TRAINING_DIR}, {VALIDATION_DIR}, {EVALUATION_DIR}")
 
 # Create data generators
 training_gen, validation_gen = create_data_generators(TRAINING_DIR, VALIDATION_DIR, BATCH_SIZE, INPUT_IMG_SIZE)
