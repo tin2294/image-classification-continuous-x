@@ -19,8 +19,8 @@ jobs:
       with:
         python-version: '3.8'
 
-    # - name: List files
-    #   run: ls -la
+    - name: List files
+      run: ls -la
 
     # - name: Install dependencies
     #   run: |
