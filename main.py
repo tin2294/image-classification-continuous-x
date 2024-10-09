@@ -1,5 +1,3 @@
-# main.py
-
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping
@@ -9,8 +7,8 @@ from utils import create_data_generators, create_model
 BATCH_SIZE = 32
 INPUT_IMG_SIZE = 224
 TRAINING_DIR = 'data/training/'
-EVALUATION_DIR = 'data/evaluation/'
 VALIDATION_DIR = 'data/validation/'
+EVALUATION_DIR = 'data/evaluation/'
 N_EPOCHS = 10
 
 # Define class labels
@@ -21,9 +19,10 @@ classes = np.array([
 ])
 
 # Create data generators
-training_gen = create_data_generators(TRAINING_DIR, BATCH_SIZE, INPUT_IMG_SIZE)
-validation_gen = create_data_generators(VALIDATION_DIR, BATCH_SIZE, INPUT_IMG_SIZE)
-evaluation_gen = create_data_generators(EVALUATION_DIR, BATCH_SIZE, INPUT_IMG_SIZE, is_eval=True)
+training_gen, validation_gen = create_data_generators(TRAINING_DIR, VALIDATION_DIR, BATCH_SIZE, INPUT_IMG_SIZE)
+
+# Create evaluation generator
+evaluation_gen = create_data_generators(EVALUATION_DIR, EVALUATION_DIR, BATCH_SIZE, INPUT_IMG_SIZE, is_eval=True)
 
 # Prepare the model
 model = create_model(INPUT_IMG_SIZE)
