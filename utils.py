@@ -5,7 +5,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import shutil
 
-def reorganize_files(dataset_path):
+def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
         class_dir = os.path.join(dataset_path, f"class_{i:02d}")
         os.makedirs(class_dir, exist_ok=True)  # Create class folder if it doesn't exist
