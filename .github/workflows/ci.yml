@@ -14,19 +14,33 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
+    - name: Check if model exists
+      id: model_check
+      run: |
+        if [ -f saved_model/my_model.h5 ]; then
+          echo "::set-output name=model_exists::true"
+          echo "Model exists."
+        else
+          echo "::set-output name=model_exists::false"
+          echo "Model does not exist."
+        fi
+
+    # Print model existence check in a separate step
+    - name: Print model existence check
+      run: echo "Model exists: ${{ steps.model_check.outputs.model_exists }}"
+    # - name: Set up Docker Buildx
+    #   uses: docker/setup-buildx-action@v1
 
     - name: Login to GitHub Container Registry
       run: echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u tin2294 --password-stdin
 
-    - name: Build Docker Image
-      run: |
-        docker build -t ghcr.io/tin2294/image-classification:latest .
+    # - name: Build Docker Image
+    #   run: |
+    #     docker build -t ghcr.io/tin2294/image-classification:latest .
 
-    - name: Push Docker Image
-      run: |
-        docker push ghcr.io/tin2294/image-classification:latest
+    # - name: Push Docker Image
+    #   run: |
+    #     docker push ghcr.io/tin2294/image-classification:latest
 
     - name: Set up Python
       uses: actions/setup-python@v2
@@ -52,34 +66,36 @@ jobs:
         name: model
       continue-on-error: true
 
-    - name: Check if model exists
-      id: model_check
-      run: |
-        if [ -f saved_model/my_model.h5 ]; then
-          echo "::set-output name=model_exists::true"
-        else
-          echo "::set-output name=model_exists::false"
-        fi
+    # - name: Check if model exists
+    #   id: model_check
+    #   run: |
+    #     if [ -f saved_model/my_model.h5 ]; then
+    #       echo "::set-output name=model_exists::true"
+    #       echo "Model exists."
+    #     else
+    #       echo "::set-output name=model_exists::false"
+    #       echo "Model does not exist."
+    #     fi
 
-    - name: Train Model
-      if: steps.model_check.outputs.model_exists == 'false'
-      run: |
-        echo "Model not found, proceeding with training..."
-        python model.py
-      working-directory: .
+    # - name: Train Model
+    #   if: steps.model_check.outputs.model_exists == 'false'
+    #   run: |
+    #     echo "Model not found, proceeding with training..."
+    #     python model.py
+    #   working-directory: .
 
-    - name: Upload training history plot
-      uses: actions/upload-artifact@v4
-      with:
-        name: training-history
-        path: training_history.png
+    # - name: Upload training history plot
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: training-history
+    #     path: training_history.png
 
-    - name: Upload model
-      if: steps.model_check.outputs.model_exists == 'false'
-      uses: actions/upload-artifact@v4
-      with:
-        name: model
-        path: saved_model/my_model.h5
+    # - name: Upload model
+    #   if: steps.model_check.outputs.model_exists == 'false'
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: model
+    #     path: saved_model/my_model.h5
 
     - name: Commit and push plots to gh-pages
       run: |
