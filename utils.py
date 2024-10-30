@@ -51,9 +51,10 @@ def create_image_generator(directory, input_size, batch_size):
     Custom data generator for images in a directory with class labels in subdirectory names.
     """
     print("Creating image generator")
-    print("Path exists:", os.path.exists('your_data_directory'))
-    print("Absolute path:", os.path.abspath('your_data_directory'))
+    print("Path exists:", os.path.exists(directory))
+    print("Absolute path:", os.path.abspath(directory))
     print(directory)
+    print(os.listdir(directory))
 
     datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1.0 / 255)
 
