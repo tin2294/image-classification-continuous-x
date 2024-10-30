@@ -46,8 +46,28 @@ jobs:
         unzip content/Food-11/dataset.zip -d content/Food-11
       working-directory: .
 
-    - name: Run model.py
-      run: python model.py
+    - name: Download model
+      uses: actions/download-artifact@v4
+      with:
+        name: model
+      continue-on-error: true
+
+    - name: Check if model exists
+      id: model_check
+      run: |
+        if [ -f saved_model/my_model.h5 ]; then
+          echo "exists=true" >> $GITHUB_ENV
+          echo "::set-output name=model_exists::true"
+        else
+          echo "exists=false" >> $GITHUB_ENV
+          echo "::set-output name=model_exists::false"
+        fi
+
+    - name: Train Model
+      if: steps.model_check.outputs.model_exists == 'false'
+      run: |
+        echo "Model not found, proceeding with training..."
+        python model.py
       working-directory: .
 
     - name: Upload training history plot
@@ -57,6 +77,7 @@ jobs:
         path: training_history.png
 
     - name: Upload model
+      if: steps.model_check.outputs.model_exists == 'false'
       uses: actions/upload-artifact@v4
       with:
         name: model
@@ -64,8 +85,8 @@ jobs:
 
     - name: Commit and push plots to gh-pages
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
+        git config --local user.email "tin2294@gmail.com"
+        git config --local user.name "Ting Ting"
         mkdir -p gh-pages
         cp training_history.png gh-pages/
         cd gh-pages
