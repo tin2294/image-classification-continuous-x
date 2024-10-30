@@ -25,9 +25,16 @@ jobs:
           echo "Model does not exist."
         fi
 
-    # Print model existence check in a separate step
+    - name: List saved models
+      run: |
+        echo "Listing saved models:"
+        ls saved_model/
+
     - name: Print model existence check
-      run: echo "Model exists: ${{ steps.model_check.outputs.model_exists }}"
+      run: |
+        MODEL_EXISTS="${{ steps.model_check.outputs.model_exists }}"
+        echo "Model exists: $MODEL_EXISTS"
+
     # - name: Set up Docker Buildx
     #   uses: docker/setup-buildx-action@v1
 
