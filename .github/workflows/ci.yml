@@ -25,6 +25,23 @@ jobs:
           echo "Model does not exist."
         fi
 
+    - name: Create dummy model file
+      run: |
+        mkdir -p saved_model  # Create the directory if it doesn't exist
+        echo "This is a dummy model file." > saved_model/dummy_model.h5
+        echo "Dummy model file created."
+  
+    - name: Upload dummy model
+      uses: actions/upload-artifact@v4
+      with:
+        name: dummy-model
+        path: saved_model/dummy_model.h5
+
+    - name: List current content
+      run: |
+        echo "Listing current files:"
+        ls
+
     - name: List saved models
       run: |
         echo "Listing saved models:"
