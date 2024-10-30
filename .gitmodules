@@ -1,0 +1,6 @@
+[submodule "chi_train"]
+	path = chi_train
+	url = https://github.com/teaching-on-testbeds/colab
+[submodule "chi_deploy"]
+	path = chi_deploy
+	url = https://github.com/teaching-on-testbeds/k8s
