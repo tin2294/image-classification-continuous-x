@@ -7,20 +7,18 @@ import matplotlib.pyplot as plt
 def load_training_labels(directory):
     images = []
     labels = []
-    print(f"Inside loader", directory)
+    print(f"Inside loader: {directory}")
     print(os.listdir(directory))
-    for class_dir in os.listdir(directory):
-        class_path = os.path.join(directory, class_dir)
-        if os.path.isdir(class_path):
-            class_label = int(class_dir.split('_')[1])  # Ensure the class label is correctly parsed
-            print(f"Checking class directory: {class_dir} with label: {class_label}")
-            for filename in os.listdir(class_path):
-                if filename.lower().endswith('.jpg'):
-                    img_path = os.path.join(class_path, filename)
-                    images.append(img_path)
-                    labels.append(class_label)
-            print(f"Found {len(os.listdir(class_path))} images in {class_dir}")
 
+    for filename in os.listdir(directory):
+        if filename.lower().endswith('.jpg'):
+            img_path = os.path.join(directory, filename)
+            # Assuming the label is the number before the underscore
+            class_label = int(filename.split('_')[0])  # Change this if your label is formatted differently
+            images.append(img_path)
+            labels.append(class_label)
+
+    print(f"Found {len(images)} images in the directory.")
     return images, np.array(labels)
 
 
