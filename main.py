@@ -27,6 +27,9 @@ if not os.path.exists(validation_dir):
 if not os.path.exists(evaluation_dir):
     raise FileNotFoundError(f"Evaluation directory does not exist: {evaluation_dir}")
 
+for dataset in [training_dir, validation_dir, evaluation_dir]:
+    reorganize_files(dataset)
+
 print(f"OK")
 training_images, training_labels = load_training_labels(training_dir)
 print(f"Loaded {len(training_images)} training images.")

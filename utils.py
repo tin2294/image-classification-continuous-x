@@ -3,6 +3,19 @@ import numpy as np
 import tensorflow as tf
 from PIL import Image
 import matplotlib.pyplot as plt
+import shutil
+
+def reorganize_files(dataset_path):
+    for i, class_name in enumerate(classes):
+        class_dir = os.path.join(dataset_path, f"class_{i:02d}")
+        os.makedirs(class_dir, exist_ok=True)  # Create class folder if it doesn't exist
+
+        # Find all images for this class in the dataset directory
+        files = [f for f in os.listdir(dataset_path) if f.startswith(f"{i}_")]
+        for f in files:
+            src = os.path.join(dataset_path, f)
+            dst = os.path.join(class_dir, f)
+            shutil.move(src, dst)
 
 def load_training_labels(directory):
     images = []
