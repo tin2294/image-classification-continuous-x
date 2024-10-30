@@ -14,7 +14,7 @@ CLASSES = np.array(["Bread", "Dairy product", "Dessert", "Egg", "Fried food",
                     "Meat", "Noodles/Pasta", "Rice", "Seafood", "Soup",
                     "Vegetable/Fruit"])
 
-base_dir = "data/Food-11"
+base_dir = "content/Food-11"
 
 training_dir = os.path.join(base_dir, "training")
 validation_dir = os.path.join(base_dir, "validation")
