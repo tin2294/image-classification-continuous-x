@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 def load_training_labels(directory):
     images = []
     labels = []
-
+    print(f"Inside loader")
     for class_dir in os.listdir(directory):
         class_path = os.path.join(directory, class_dir)
         if os.path.isdir(class_path):
