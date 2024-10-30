@@ -71,24 +71,24 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-      working-directory: .
+    # - name: Install dependencies
+    #   run: |
+    #     python -m pip install --upgrade pip
+    #     pip install -r requirements.txt
+    #   working-directory: .
 
-    - name: Download dataset
-      run: |
-        mkdir -p content/Food-11
-        gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
-        unzip content/Food-11/dataset.zip -d content/Food-11
-      working-directory: .
+    # - name: Download dataset
+    #   run: |
+    #     mkdir -p content/Food-11
+    #     gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
+    #     unzip content/Food-11/dataset.zip -d content/Food-11
+    #   working-directory: .
 
-    - name: Download model
-      uses: actions/download-artifact@v4
-      with:
-        name: model
-      continue-on-error: true
+    # - name: Download model
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: model
+    #   continue-on-error: true
 
     # - name: Check if model exists
     #   id: model_check
@@ -121,21 +121,21 @@ jobs:
     #     name: model
     #     path: saved_model/my_model.h5
 
-    - name: Commit and push plots to gh-pages
-      run: |
-        git config --local user.email "tin2294@gmail.com"
-        git config --local user.name "Ting Ting"
-        mkdir -p gh-pages
-        cp training_history.png gh-pages/
-        cd gh-pages
-        git init
-        git remote add origin https://github.com/tin2294/image-classification-continuous-x.git
-        git checkout -b gh-pages
-        git add training_history.png
-        git commit -m "Add training history plot"
-        git push --force origin gh-pages
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Commit and push plots to gh-pages
+    #   run: |
+    #     git config --local user.email "tin2294@gmail.com"
+    #     git config --local user.name "Ting Ting"
+    #     mkdir -p gh-pages
+    #     cp training_history.png gh-pages/
+    #     cd gh-pages
+    #     git init
+    #     git remote add origin https://github.com/tin2294/image-classification-continuous-x.git
+    #     git checkout -b gh-pages
+    #     git add training_history.png
+    #     git commit -m "Add training history plot"
+    #     git push --force origin gh-pages
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     runs-on: ubuntu-latest
