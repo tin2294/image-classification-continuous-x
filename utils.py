@@ -5,24 +5,23 @@ from PIL import Image
 import matplotlib.pyplot as plt
 
 def load_training_labels(directory):
-    """
-    Load images and their corresponding labels from the given directory.
-    Assumes that images are organized into subdirectories named after their class labels.
-    """
     images = []
     labels = []
 
     for class_dir in os.listdir(directory):
         class_path = os.path.join(directory, class_dir)
         if os.path.isdir(class_path):
-            class_label = int(class_dir.split('_')[1])
+            class_label = int(class_dir.split('_')[1])  # Ensure the class label is correctly parsed
+            print(f"Checking class directory: {class_dir} with label: {class_label}")
             for filename in os.listdir(class_path):
                 if filename.lower().endswith('.jpg'):
                     img_path = os.path.join(class_path, filename)
                     images.append(img_path)
                     labels.append(class_label)
+            print(f"Found {len(os.listdir(class_path))} images in {class_dir}")
 
     return images, np.array(labels)
+
 
 def plot_sample_images(classes, labels, image_paths, n_samples_per_class=4):
     """
