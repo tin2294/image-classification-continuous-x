@@ -51,16 +51,32 @@ jobs:
       working-directory: .
 
     - name: Upload training history plot
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: training-history
         path: training_history.png
 
     - name: Upload model
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: model
         path: saved_model/my_model.h5
+
+    - name: Commit and push plots to gh-pages
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        mkdir -p gh-pages
+        cp training_history.png gh-pages/
+        cd gh-pages
+        git init
+        git remote add origin https://github.com/tin2294/image-classification-continuous-x.git
+        git checkout -b gh-pages
+        git add training_history.png
+        git commit -m "Add training history plot"
+        git push --force origin gh-pages
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     runs-on: ubuntu-latest
@@ -71,7 +87,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Download model
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: model
 
@@ -89,3 +105,18 @@ jobs:
     - name: Run tests
       run: |
         pytest --maxfail=1 --disable-warnings -q
+
+    - name: Comment with training history plot URL
+      uses: actions/github-script@v4
+      with:
+        script: |
+          const plotUrl = `https://tin2294.github.io/image-classification-continuous-x/training_history.png`;
+          const context = require('@actions/github').context;
+          const issueComment = context.payload.pull_request ? context.payload.pull_request.number : context.issue.number;
+          github.issues.createComment({
+            ...context.repo,
+            issue_number: issueComment,
+            body: `Training history plot: ![Training History Plot](${plotUrl})`
+          });
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
