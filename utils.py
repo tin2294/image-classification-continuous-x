@@ -109,3 +109,37 @@ def build_model(input_size, num_classes):
                   metrics=['accuracy'])
     
     return model
+
+
+def plot_training_history(hist, filename='training_history.png'):
+    """
+    Plots the training history of a model.
+
+    Parameters:
+        hist: History object containing training history metrics.
+        filename: The name of the file to save the plot as.
+    """
+    plt.figure(figsize=(12, 5))
+
+    # Plot Loss
+    plt.subplot(1, 2, 1)
+    plt.plot(hist.history['loss'], label='Training Loss')
+    plt.plot(hist.history['val_loss'], label='Validation Loss')
+    plt.title('Loss vs. Epochs')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+
+    # Plot Accuracy
+    plt.subplot(1, 2, 2)
+    plt.plot(hist.history['accuracy'], label='Training Accuracy')
+    plt.plot(hist.history['val_accuracy'], label='Validation Accuracy')
+    plt.title('Accuracy vs. Epochs')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+
+    # Save the plots as images
+    plt.tight_layout()
+    plt.savefig(filename)
+    plt.close()

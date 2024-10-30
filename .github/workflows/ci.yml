@@ -53,3 +53,9 @@ jobs:
     - name: Run tests
       run: |
         pytest --maxfail=1 --disable-warnings -q
+
+        - name: Upload training history plot
+        uses: actions/upload-artifact@v2
+        with:
+          name: training-history
+          path: training_history.png

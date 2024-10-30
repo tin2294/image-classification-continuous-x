@@ -6,7 +6,8 @@ from utils import (
     plot_sample_images,
     prepare_data_generators,
     build_model,
-    reorganize_files
+    reorganize_files,
+    plot_training_history
 )
 
 BATCH_SIZE = 128
@@ -64,25 +65,4 @@ hist = model.fit(
     validation_steps=validation_steps
 )
 
-# Plot training history
-plt.figure(figsize=(12, 5))
-
-# Plot Loss
-plt.subplot(1, 2, 1)
-plt.plot(hist.history['loss'], label='Training Loss')
-plt.plot(hist.history['val_loss'], label='Validation Loss')
-plt.title('Loss vs. Epochs')
-plt.xlabel('Epochs')
-plt.ylabel('Loss')
-plt.legend()
-
-# Plot Accuracy
-plt.subplot(1, 2, 2)
-plt.plot(hist.history['accuracy'], label='Training Accuracy')
-plt.plot(hist.history['val_accuracy'], label='Validation Accuracy')
-plt.title('Accuracy vs. Epochs')
-plt.xlabel('Epochs')
-plt.ylabel('Accuracy')
-plt.legend()
-
-plt.show()
+plot_training_history(hist)
