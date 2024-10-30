@@ -39,6 +39,12 @@ jobs:
         pip install -r requirements.txt
       working-directory: .
 
+    - name: Download dataset
+      run: |
+        mkdir -p content/Food-11
+        gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
+        unzip content/Food-11/dataset.zip -d content/Food-11
+      working-directory: .
 
     - name: Run main.py
       run: python main.py

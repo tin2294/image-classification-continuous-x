@@ -20,6 +20,13 @@ training_dir = os.path.join(base_dir, "training")
 validation_dir = os.path.join(base_dir, "validation")
 evaluation_dir = os.path.join(base_dir, "evaluation")
 
+if not os.path.exists(training_dir):
+    raise FileNotFoundError(f"Training directory does not exist: {training_dir}")
+if not os.path.exists(validation_dir):
+    raise FileNotFoundError(f"Validation directory does not exist: {validation_dir}")
+if not os.path.exists(evaluation_dir):
+    raise FileNotFoundError(f"Evaluation directory does not exist: {evaluation_dir}")
+
 training_images, training_labels = load_training_labels(training_dir)
 
 plot_sample_images(CLASSES, training_labels, training_images, n_samples_per_class=4)

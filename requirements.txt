@@ -4,3 +4,4 @@ pillow==9.1.0
 pytest
 matplotlib
 pandas
+gdown
