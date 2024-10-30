@@ -1,0 +1,70 @@
+import numpy as np
+import os
+import matplotlib.pyplot as plt
+from utils import (
+    load_training_labels,
+    plot_sample_images,
+    prepare_data_generators,
+    build_model,
+    reorganize_files,
+    plot_training_history,
+    save_model
+)
+
+BATCH_SIZE = 128
+INPUT_IMG_SIZE = 112
+CLASSES = np.array(["Bread", "Dairy product", "Dessert", "Egg", "Fried food",
+                    "Meat", "Noodles/Pasta", "Rice", "Seafood", "Soup",
+                    "Vegetable/Fruit"])
+
+base_dir = "content/Food-11"
+
+training_dir = os.path.join(base_dir, "training")
+validation_dir = os.path.join(base_dir, "validation")
+evaluation_dir = os.path.join(base_dir, "evaluation")
+
+for dataset in [training_dir, validation_dir, evaluation_dir]:
+    if not os.path.exists(dataset):
+        raise FileNotFoundError(f"Directory does not exist: {dataset}")
+
+for dataset in [training_dir, validation_dir, evaluation_dir]:
+    reorganize_files(dataset, CLASSES)
+
+training_images, training_labels = load_training_labels(training_dir)
+print(f"Loaded {len(training_images)} training images.")
+print(f"Sample training labels: {training_labels[:5]}")
+
+plot_sample_images(CLASSES, training_labels, training_images, n_samples_per_class=4)
+print("Sample images plotted.")
+
+# Prepare data generators
+training_gen, validation_gen, evaluation_gen = prepare_data_generators(
+    training_dir, validation_dir, evaluation_dir, INPUT_IMG_SIZE, BATCH_SIZE)
+print(f"Training generator has {training_gen.samples} samples.")
+print(f"Validation generator has {validation_gen.samples} samples.")
+
+# Build and train model
+model = build_model(INPUT_IMG_SIZE, len(CLASSES))
+
+# Calculate number of steps
+num_training_samples = training_gen.samples
+num_validation_samples = validation_gen.samples
+n_epochs = 10
+
+steps_per_epoch = num_training_samples // BATCH_SIZE
+validation_steps = num_validation_samples // BATCH_SIZE
+
+# Fit the model
+hist = model.fit(
+    training_gen,
+    steps_per_epoch=steps_per_epoch,
+    epochs=n_epochs,
+    validation_data=validation_gen,
+    validation_steps=validation_steps
+)
+
+plot_training_history(hist)
+
+model_save_path = "saved_model/my_model.h5"
+save_model(model, model_save_path)
+print(f"Model saved to {model_save_path}")
