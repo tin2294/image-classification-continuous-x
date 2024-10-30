@@ -28,12 +28,17 @@ if not os.path.exists(evaluation_dir):
     raise FileNotFoundError(f"Evaluation directory does not exist: {evaluation_dir}")
 
 training_images, training_labels = load_training_labels(training_dir)
+print(f"Loaded {len(training_images)} training images.")
+print(f"Sample training labels: {training_labels[:5]}")
 
 plot_sample_images(CLASSES, training_labels, training_images, n_samples_per_class=4)
+print("Sample images plotted.")
 
 # Prepare data generators
 training_gen, validation_gen, evaluation_gen = prepare_data_generators(
     training_dir, validation_dir, evaluation_dir, INPUT_IMG_SIZE, BATCH_SIZE)
+print(f"Training generator has {training_gen.samples} samples.")
+print(f"Validation generator has {validation_gen.samples} samples.")
 
 # Build and train model
 model = build_model(INPUT_IMG_SIZE, len(CLASSES))
