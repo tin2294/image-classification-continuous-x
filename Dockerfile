@@ -22,9 +22,9 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 COPY . /app
 
 # Set environment variable (if needed for your specific application)
-ENV PYTHON_APP main.py
+ENV PYTHON_APP model.py
 
 # Expose the port on which the app will run (change the port if needed)
 EXPOSE 8000
 
-CMD ["python", "main.py"]
+CMD ["python", "model.py"]

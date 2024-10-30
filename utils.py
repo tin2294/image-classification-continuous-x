@@ -4,6 +4,7 @@ import tensorflow as tf
 from PIL import Image
 import matplotlib.pyplot as plt
 import shutil
+import keras
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
@@ -143,3 +144,8 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.tight_layout()
     plt.savefig(filename)
     plt.close()
+
+def save_model(model, filepath):
+    """Save the trained model to the specified filepath."""
+    model.save(filepath)
+    print(f"Model saved to {filepath}")
