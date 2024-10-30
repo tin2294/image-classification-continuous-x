@@ -145,19 +145,16 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Checkout code
-      uses: actions/checkout@v2
-
-    - name: Download dummy model artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: dummy_model
-        path: saved_model
-
     - name: List saved models
       run: |
         echo "Listing saved models:"
         ls saved_model/
+
+    - name: Download dummy model artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dummy_model2
+        path: saved_model
       
     # - name: Download model
     #   uses: actions/download-artifact@v4
