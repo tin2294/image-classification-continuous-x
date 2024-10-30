@@ -5,7 +5,8 @@ from utils import (
     load_training_labels,
     plot_sample_images,
     prepare_data_generators,
-    build_model
+    build_model,
+    reorganize_files
 )
 
 BATCH_SIZE = 128
