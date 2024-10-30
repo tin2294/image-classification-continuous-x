@@ -13,8 +13,7 @@ def load_training_labels(directory):
     for filename in os.listdir(directory):
         if filename.lower().endswith('.jpg'):
             img_path = os.path.join(directory, filename)
-            # Assuming the label is the number before the underscore
-            class_label = int(filename.split('_')[0])  # Change this if your label is formatted differently
+            class_label = int(filename.split('_')[0])
             images.append(img_path)
             labels.append(class_label)
 
@@ -52,6 +51,10 @@ def create_image_generator(directory, input_size, batch_size):
     Custom data generator for images in a directory with class labels in subdirectory names.
     """
     print("Creating image generator")
+    print("Path exists:", os.path.exists('your_data_directory'))
+    print("Absolute path:", os.path.abspath('your_data_directory'))
+    print(directory)
+
     datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1.0 / 255)
 
     generator = datagen.flow_from_directory(
