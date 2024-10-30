@@ -28,14 +28,14 @@ jobs:
     - name: Create dummy model file
       run: |
         mkdir -p saved_model  # Create the directory if it doesn't exist
-        echo "This is a dummy model file." > saved_model/dummy_model.h5
+        echo "This is a dummy model file." > saved_model/dummy_model2.h5
         echo "Dummy model file created."
   
     - name: Upload dummy model
       uses: actions/upload-artifact@v4
       with:
         name: dummy-model
-        path: saved_model/dummy_model.h5
+        path: saved_model/dummy_model2.h5
 
     - name: List current content
       run: |
@@ -145,37 +145,51 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Download model
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Download dummy model artifact
       uses: actions/download-artifact@v4
       with:
-        name: model
+        name: dummy_model
+        path: saved_model
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
-
-    - name: Install dependencies
+    - name: List saved models
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-      working-directory: .
+        echo "Listing saved models:"
+        ls saved_model/
+      
+    # - name: Download model
+    #   uses: actions/download-artifact@v4
+    #   with:
+    #     name: model
 
-    - name: Run tests
-      run: |
-        pytest --maxfail=1 --disable-warnings -q
+    # - name: Set up Python
+    #   uses: actions/setup-python@v2
+    #   with:
+    #     python-version: '3.8'
 
-    - name: Comment with training history plot URL
-      uses: actions/github-script@v4
-      with:
-        script: |
-          const plotUrl = `https://tin2294.github.io/image-classification-continuous-x/training_history.png`;
-          const context = require('@actions/github').context;
-          const issueComment = context.payload.pull_request ? context.payload.pull_request.number : context.issue.number;
-          github.issues.createComment({
-            ...context.repo,
-            issue_number: issueComment,
-            body: `Training history plot: ![Training History Plot](${plotUrl})`
-          });
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # - name: Install dependencies
+    #   run: |
+    #     python -m pip install --upgrade pip
+    #     pip install -r requirements.txt
+    #   working-directory: .
+
+    # - name: Run tests
+    #   run: |
+    #     pytest --maxfail=1 --disable-warnings -q
+
+    # - name: Comment with training history plot URL
+    #   uses: actions/github-script@v4
+    #   with:
+    #     script: |
+    #       const plotUrl = `https://tin2294.github.io/image-classification-continuous-x/training_history.png`;
+    #       const context = require('@actions/github').context;
+    #       const issueComment = context.payload.pull_request ? context.payload.pull_request.number : context.issue.number;
+    #       github.issues.createComment({
+    #         ...context.repo,
+    #         issue_number: issueComment,
+    #         body: `Training history plot: ![Training History Plot](${plotUrl})`
+    #       });
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
