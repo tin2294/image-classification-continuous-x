@@ -56,10 +56,8 @@ jobs:
       id: model_check
       run: |
         if [ -f saved_model/my_model.h5 ]; then
-          echo "exists=true" >> $GITHUB_ENV
           echo "::set-output name=model_exists::true"
         else
-          echo "exists=false" >> $GITHUB_ENV
           echo "::set-output name=model_exists::false"
         fi
 
