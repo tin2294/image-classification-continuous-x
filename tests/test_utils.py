@@ -2,8 +2,8 @@ import unittest
 import os
 import sys
 import numpy as np
-import tempfile  # Import tempfile to create temporary directories
-from PIL import Image  # Import Image from PIL
+import tempfile
+from PIL import Image
 import shutil
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
