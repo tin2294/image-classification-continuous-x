@@ -1,0 +1,30 @@
+name: Redeploy on New Model Update
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+        - "image-classification-continuous-x/app/model.keras"
+
+jobs:
+  redeploy:
+    runs-on: self-hosted
+    name: Redeploy ML App
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Log in to Docker Registry
+      run: |
+        echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u tin2294 --password-stdin
+
+    - name: Build and push Docker image
+      run: |
+          docker build -t node-0:5000/ml-app:latest image-classification-continuous-x/app
+          docker push node-0:5000/ml-app:latest
+
+    - name: Apply Kubernetes manifest
+      run: |
+          kubectl apply -f ~/image-classification-continuous-x/deploy_k8s/deployment_k8s.yaml

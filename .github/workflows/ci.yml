@@ -14,68 +14,30 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Check if model exists
-      id: model_check
-      run: |
-        if [ -f saved_model/my_model.h5 ]; then
-          echo "::set-output name=model_exists::true"
-          echo "Model exists."
-        else
-          echo "::set-output name=model_exists::false"
-          echo "Model does not exist."
-        fi
-
-    - name: Create dummy model file
-      run: |
-        mkdir -p saved_model  # Create the directory if it doesn't exist
-        echo "This is a dummy model file." > saved_model/dummy_model2.h5
-        echo "Dummy model file created."
-  
-    - name: Upload dummy model
-      uses: actions/upload-artifact@v4
-      with:
-        name: dummy-model
-        path: saved_model/dummy_model2.h5
-
-    - name: List current content
-      run: |
-        echo "Listing current files:"
-        ls
-
-    - name: List saved models
-      run: |
-        echo "Listing saved models:"
-        ls saved_model/
-
-    - name: Print model existence check
-      run: |
-        MODEL_EXISTS="${{ steps.model_check.outputs.model_exists }}"
-        echo "Model exists: $MODEL_EXISTS"
-
-    # - name: Set up Docker Buildx
-    #   uses: docker/setup-buildx-action@v1
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
 
     - name: Login to GitHub Container Registry
       run: echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u tin2294 --password-stdin
 
-    # - name: Build Docker Image
-    #   run: |
-    #     docker build -t ghcr.io/tin2294/image-classification:latest .
+    - name: Build Docker Image
+      run: |
+        docker build -t ghcr.io/tin2294/image-classification:latest .
 
-    # - name: Push Docker Image
-    #   run: |
-    #     docker push ghcr.io/tin2294/image-classification:latest
+    - name: Push Docker Image
+      run: |
+        docker push ghcr.io/tin2294/image-classification:latest
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.8'
 
-    # - name: Install dependencies
-    #   run: |
-    #     python -m pip install --upgrade pip
-    #     pip install -r requirements.txt
-    #   working-directory: .
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      working-directory: .
 
     # - name: Download dataset
     #   run: |
@@ -83,23 +45,6 @@ jobs:
     #     gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
     #     unzip content/Food-11/dataset.zip -d content/Food-11
     #   working-directory: .
-
-    # - name: Download model
-    #   uses: actions/download-artifact@v4
-    #   with:
-    #     name: model
-    #   continue-on-error: true
-
-    # - name: Check if model exists
-    #   id: model_check
-    #   run: |
-    #     if [ -f saved_model/my_model.h5 ]; then
-    #       echo "::set-output name=model_exists::true"
-    #       echo "Model exists."
-    #     else
-    #       echo "::set-output name=model_exists::false"
-    #       echo "Model does not exist."
-    #     fi
 
     # - name: Train Model
     #   if: steps.model_check.outputs.model_exists == 'false'
@@ -144,17 +89,6 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
-    - name: Download dummy model artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: dummy_model2
-        path: saved_model
-
-    - name: List saved models
-      run: |
-        echo "Listing saved models:"
-        ls saved_model/
       
     # - name: Download model
     #   uses: actions/download-artifact@v4
