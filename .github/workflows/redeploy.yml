@@ -20,15 +20,19 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Log in to Docker Registry
-      run: |
-        echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u tin2294 --password-stdin
+    # DO NOT NEED
+    # - name: Log in to Docker Registry
+    #   run: |
+    #     echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u tin2294 --password-stdin
 
+    # GET THE FRONT END PART WITH LATEST SOFTWARE
+    # NEED TO GET THE LATEST MODEL
     - name: Build and push Docker image
       run: |
           docker build -t node-0:5000/ml-app:latest app
           docker push node-0:5000/ml-app:latest
 
+    # Make sure it is actually redeploying (non disrupting) - currently not redeploying if deploying
     - name: Apply Kubernetes manifest
       run: |
           kubectl apply -f ~/image-classification-continuous-x/deploy_k8s/deployment_k8s.yaml
