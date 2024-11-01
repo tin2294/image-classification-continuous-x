@@ -25,6 +25,13 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download dataset
+        run: |
+          mkdir -p content/Food-11
+          gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
+          unzip content/Food-11/dataset.zip -d content/Food-11
+        working-directory: .
+
       - name: Run Training Script
         run: |
           python model_train.py
