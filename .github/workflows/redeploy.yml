@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-        - "image-classification-continuous-x/app/model.keras"
+  # commented out to trigger on purpose
+    # paths:
+    #     - "image-classification-continuous-x/app/model.keras"
 
 jobs:
   redeploy:
