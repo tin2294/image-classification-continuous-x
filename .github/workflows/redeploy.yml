@@ -36,4 +36,4 @@ jobs:
 
     - name: Display Kubernetes Pod Status
       run: |
-        kubectl get pods -o wide --namespace=<your-namespace> || echo "Kubernetes pod status not available"
+        kubectl get pods -o wide || echo "Kubernetes pod status not available"
