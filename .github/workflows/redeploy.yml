@@ -29,3 +29,11 @@ jobs:
     - name: Apply Kubernetes manifest
       run: |
           kubectl apply -f ~/deploy_k8s/deployment_k8s.yaml
+
+    - name: Display Docker Logs
+      run: |
+        docker logs $(docker ps -q -f ancestor=node-0:5000/ml-app:latest) || echo "No Docker container running for ml-app"
+
+    - name: Display Kubernetes Pod Status
+      run: |
+        kubectl get pods -o wide --namespace=<your-namespace> || echo "Kubernetes pod status not available"
