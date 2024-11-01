@@ -37,3 +37,7 @@ jobs:
     - name: Display Kubernetes Pod Status
       run: |
         kubectl get pods -o wide || echo "Kubernetes pod status not available"
+
+    - name: Display Kubernetes URL
+      run: |
+        echo http://$(curl -s ifconfig.me/ip):32000
