@@ -56,5 +56,7 @@ jobs:
       # made it 0.2 for now to check workflow
         if: steps.metrics.outputs.evaluation_accuracy && steps.metrics.outputs.evaluation_accuracy >= 0.2
         run: |
+          git config --local user.email "tin2294@gmail.com"
+          git config --local user.name "Ting Ting"
           git tag -a "redeploy" -m "Auto-redeploy from training workflow"
           git push origin redeploy
