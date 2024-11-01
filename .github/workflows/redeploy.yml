@@ -17,6 +17,16 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
+    - name: Verify File Structure at Root
+      run: |
+        echo "Listing files at root level:"
+        ls -R
+
+    - name: Verify File Structure in image-classification-continuous-x/app
+      run: |
+        echo "Listing files in image-classification-continuous-x/app:"
+        ls -R image-classification-continuous-x/app
+
     - name: Log in to Docker Registry
       run: |
         echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u tin2294 --password-stdin
