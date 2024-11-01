@@ -50,7 +50,7 @@ jobs:
     #   if: steps.model_check.outputs.model_exists == 'false'
     #   run: |
     #     echo "Model not found, proceeding with training..."
-    #     python model.py
+    #     python model_train.py
     #   working-directory: .
 
     # - name: Upload training history plot

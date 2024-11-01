@@ -68,3 +68,11 @@ plot_training_history(hist)
 model_save_path = "saved_model/my_model.h5"
 save_model(model, model_save_path)
 print(f"Model saved to {model_save_path}")
+
+evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
+print(f"Evaluation Loss: {evaluation_loss}")
+print(f"Evaluation Accuracy: {evaluation_accuracy}")
+
+with open("evaluation_metrics.txt", "w") as f:
+    f.write(f"evaluation_accuracy: {evaluation_accuracy}\n")
+    f.write(f"evaluation_loss: {evaluation_loss}\n")

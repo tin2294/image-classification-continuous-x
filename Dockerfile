@@ -22,9 +22,9 @@ RUN pip install --trusted-host pypi.python.org -r requirements.txt
 COPY . /app
 
 # Set environment variable (if needed for your specific application)
-ENV PYTHON_APP model.py
+ENV PYTHON_APP model_train.py
 
 # Expose the port on which the app will run (change the port if needed)
 EXPOSE 8000
 
-CMD ["python", "model.py"]
+CMD ["python", "model_train.py"]

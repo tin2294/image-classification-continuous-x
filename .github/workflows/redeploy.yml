@@ -1,12 +1,15 @@
 name: Redeploy on New Model Update
 
-on:
-  push:
-    branches:
-      - main
-  # commented out to force trigger
+# on:
+#   push:
+#     branches:
+#       - main
     # paths:
     #     - "app/model.keras"
+on:
+  push:
+    tags:
+      - redeploy
 
 jobs:
   redeploy:
