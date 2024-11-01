@@ -24,8 +24,8 @@ jobs:
 
     - name: Verify File Structure in image-classification-continuous-x/app
       run: |
-        echo "Listing files in image-classification-continuous-x/app:"
-        ls -R image-classification-continuous-x/app
+        echo "Listing files in app:"
+        ls -R app
 
     - name: Log in to Docker Registry
       run: |
