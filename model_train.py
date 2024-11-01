@@ -49,7 +49,9 @@ model = build_model(INPUT_IMG_SIZE, len(CLASSES))
 # Calculate number of steps
 num_training_samples = training_gen.samples
 num_validation_samples = validation_gen.samples
-n_epochs = 10
+# short to make sure workflows are working
+n_epochs = 3
+# n_epochs = 10
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
 validation_steps = num_validation_samples // BATCH_SIZE

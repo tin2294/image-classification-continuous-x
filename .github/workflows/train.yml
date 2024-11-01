@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-      # force run for now
+      # force training for now
       # paths:
-    #   - 'model_train.py'
+      #   - 'model_train.py'
 
 jobs:
   train-evaluate:
@@ -46,9 +46,15 @@ jobs:
         run: |
           evaluation_accuracy=$(grep 'evaluation_accuracy' evaluation_metrics.txt | cut -d' ' -f2)
           echo "::set-output name=evaluation_accuracy::$evaluation_accuracy"
+        continue-on-error: true
+
+      - name: Display Evaluation Accuracy
+        run: |
+          echo "Evaluation Accuracy is: ${{ steps.metrics.outputs.evaluation_accuracy }}"
 
       - name: Redeploy if Accuracy Meets Threshold
-        if: steps.metrics.outputs.evaluation_accuracy >= 0.90
+      # made it 0.2 for now to check workflow
+        if: steps.metrics.outputs.evaluation_accuracy && steps.metrics.outputs.evaluation_accuracy >= 0.2
         run: |
           git tag -a "redeploy" -m "Auto-redeploy from training workflow"
           git push origin redeploy
