@@ -4,8 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'model_train.py'
+      # force run for now
+      # paths:
+    #   - 'model_train.py'
 
 jobs:
   train-evaluate:
