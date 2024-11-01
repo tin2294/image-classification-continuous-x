@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  # commented out to trigger on purpose
+  # commented out to force trigger
     # paths:
     #     - "app/model.keras"
 
