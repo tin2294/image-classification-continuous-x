@@ -22,12 +22,12 @@ jobs:
       # i.e. node.run("docker run -d --rm -p 8888:8888 --gpus all quay.io/jupyter/tensorflow-notebook:cuda-tensorflow-2.16.1") make this non-notebook
       # something like this tensorflow/tensorflow:2.16.1-gpu --> need to pass dataset from paraserver to -v argument into container --> -v /path/on/host:/path/in/container
       # Immediately run a command on the container (inside the container on the server) --> docker run --> commands inside the container
-      - name: Download dataset
-        run: |
-          mkdir -p content/Food-11
-          gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
-          unzip content/Food-11/dataset.zip -d content/Food-11
-        working-directory: .
+      # - name: Download dataset
+      #   run: |
+      #     mkdir -p content/Food-11
+      #     gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
+      #     unzip content/Food-11/dataset.zip -d content/Food-11
+      #   working-directory: .
 
 
       # - name: Run Training in TensorFlow GPU Container
@@ -45,16 +45,22 @@ jobs:
       #         python model_train.py
       #       "
       # WE DO NOT NEED TO BE REINSTALLING ALL OF THIS HERE - ALL in container (tf should include anyways)
-      # - name: Set up Python
-      #   uses: actions/setup-python@v4
-      #   with:
-      #     python-version: '3.8'
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
 
-      # - name: Install Dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install -r requirements.txt
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
+      - name: Download dataset
+        run: |
+          mkdir -p content/Food-11
+          gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
+          unzip content/Food-11/dataset.zip -d content/Food-11
+        working-directory: .
 
       # TRAIN MODEL IN CONTAINER
       - name: Run Training Script
