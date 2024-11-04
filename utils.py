@@ -70,11 +70,21 @@ def create_image_generator(directory, input_size, batch_size):
     print(directory)
     print(os.listdir(directory))
 
-    datagen = tf.keras.preprocessing.image.ImageDataGenerator(rescale=1.0 / 255)
+    datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+        rescale=1.0 / 255,
+        rotation_range=2,
+        zoom_range=0.25,
+        width_shift_range=0.25,
+        height_shift_range=0.25,
+        shear_range=0.25,
+        horizontal_flip=True,
+        fill_mode="nearest")
 
     generator = datagen.flow_from_directory(
         directory,
         target_size=(input_size, input_size),
+        color_mode="rgb",
+        shuffle=True,
         batch_size=batch_size,
         class_mode='sparse'
     )
