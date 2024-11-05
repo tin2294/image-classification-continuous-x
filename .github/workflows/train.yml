@@ -30,7 +30,7 @@ jobs:
           docker run --rm --gpus all \
             -v "${{ github.workspace }}:/home/jovyan/work" \
             -w /home/jovyan/work \
-            tensorflow/tensorflow:2.16.1-gpu \
+            quay.io/jupyter/tensorflow-notebook:cuda-tensorflow-2.16.1 \
             /bin/bash -c "
               echo 'Connected to Docker Container' &&
               echo 'Current Directory:' &&
@@ -44,8 +44,9 @@ jobs:
                 echo 'Dataset does not exist. Will download it.' &&
                 echo 'DATASET_EXISTS=false' >> /tmp/github_env &&
                 mkdir -p content/Food-11 &&
-                apt-get update && apt-get install -y gdown unzip &&
-                gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip &&
+                apt-get update && \
+                apt-get install -y gdown unzip && \
+                gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip && \
                 unzip content/Food-11/dataset.zip -d content/Food-11
               fi
             "
