@@ -51,7 +51,7 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "
-              if [ -d '/tmp/content/Food-11' ] && [ \$(ls -A /tmp/content/Food-11 | wc -l) -gt 0 ]; then
+              if [ -d '/tmp/content/Food-11' ] && [ "$(ls -A /tmp/content/Food-11)" ]; then
                 echo 'Dataset already exists and is not empty. Skipping download.';
               else
                 echo 'Dataset does not exist or is empty. Will download it.';
@@ -59,8 +59,11 @@ jobs:
                 apt-get update && \
                 apt-get install -y python3-pip unzip && \
                 pip3 install gdown && \
+                echo 'Downloading dataset...' && \
                 gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
-                unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 || { echo 'Download or unzip failed!'; exit 1; };
+                echo 'Unzipping dataset...' && \
+                unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
+                echo 'Dataset downloaded and unzipped.';
               fi;
 
               echo 'Listing files in /tmp/content/Food-11:';
