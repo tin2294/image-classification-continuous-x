@@ -10,6 +10,7 @@ from utils import (
     plot_training_history,
     save_model
 )
+from tensorflow.keras.callbacks import EarlyStopping
 
 BATCH_SIZE = 128
 INPUT_IMG_SIZE = 112

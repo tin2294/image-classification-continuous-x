@@ -5,7 +5,6 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import shutil
 import keras
-from tensorflow.keras.callbacks import EarlyStopping
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
