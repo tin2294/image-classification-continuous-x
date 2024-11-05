@@ -58,6 +58,10 @@ jobs:
             fi;
           "
 
+      - name: Install Dependencies from requirements.txt
+        run: |
+          docker exec tensorflow_container pip install -r /workspace/requirements.txt
+
       # Run the training script within the running container
       - name: Run Training Script
         run: |
