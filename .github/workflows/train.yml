@@ -25,32 +25,32 @@ jobs:
       # something like this tensorflow/tensorflow:2.16.1-gpu --> need to pass dataset from paraserver to -v argument into container --> -v /path/on/host:/path/in/container
       # Immediately run a command on the container (inside the container on the server) --> docker run --> commands inside the container
 
-      # - name: Run Docker container
-      #   run: |
-      #     docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace tensorflow/tensorflow:latest-gpu bash -c "echo 'Running in TensorFlow container'"
-
-      - name: Check and Download Dataset in Docker Container
+      - name: Run Docker container
         run: |
-          docker run --rm --gpus all \
-            -v "${{ github.workspace }}:/workspace" \
-            -w /workspace \
-            tensorflow/tensorflow:latest-gpu bash -c "
-              echo 'Connected to Docker Container' &&
-              echo 'Current Directory:' && pwd &&
-              echo 'Listing files:' && ls -la /workspace &&
-              if [ -d 'content/Food-11' ]; then
-                echo 'Dataset already exists. Skipping download.' &&
-                echo 'DATASET_EXISTS=true' >> /tmp/github_env;
-              else
-                echo 'Dataset does not exist. Will download it.' &&
-                echo 'DATASET_EXISTS=false' >> /tmp/github_env &&
-                mkdir -p content/Food-11 &&
-                apt-get update && \
-                apt-get install -y gdown unzip && \
-                gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip && \
-                unzip content/Food-11/dataset.zip -d content/Food-11;
-              fi
-            "
+          docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace tensorflow/tensorflow:latest-gpu bash -c "echo 'Running in TensorFlow container'"
+
+      # - name: Check and Download Dataset in Docker Container
+      #   run: |
+      #     docker run --rm --gpus all \
+      #       -v "${{ github.workspace }}:/workspace" \
+      #       -w /workspace \
+      #       tensorflow/tensorflow:latest-gpu bash -c "
+      #         echo 'Connected to Docker Container' &&
+      #         echo 'Current Directory:' && pwd &&
+      #         echo 'Listing files:' && ls -la /workspace &&
+      #         if [ -d 'content/Food-11' ]; then
+      #           echo 'Dataset already exists. Skipping download.' &&
+      #           echo 'DATASET_EXISTS=true' >> /tmp/github_env;
+      #         else
+      #           echo 'Dataset does not exist. Will download it.' &&
+      #           echo 'DATASET_EXISTS=false' >> /tmp/github_env &&
+      #           mkdir -p content/Food-11 &&
+      #           apt-get update && \
+      #           apt-get install -y gdown unzip && \
+      #           gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip && \
+      #           unzip content/Food-11/dataset.zip -d content/Food-11;
+      #         fi
+      #       "
 
       # WE DO NOT NEED TO BE REINSTALLING ALL OF THIS HERE - ALL in container (tf should include anyways)
 
