@@ -44,7 +44,9 @@ print(f"Training generator has {training_gen.samples} samples.")
 print(f"Validation generator has {validation_gen.samples} samples.")
 
 # Build and train model
-model = build_model(INPUT_IMG_SIZE, len(CLASSES))
+# model = build_model(INPUT_IMG_SIZE, len(CLASSES))
+model = build_transfer_model(INPUT_IMG_SIZE, len(CLASSES))
+
 
 # Calculate number of steps
 num_training_samples = training_gen.samples
@@ -52,20 +54,51 @@ num_validation_samples = validation_gen.samples
 # short to make sure workflows are working
 # n_epochs = 3
 n_epochs = 10
+n_epochs_fine = 8
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
 validation_steps = num_validation_samples // BATCH_SIZE
 
+early_stop = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
+
 # Fit the model
+# hist = model.fit(
+#     training_gen,
+#     steps_per_epoch=steps_per_epoch,
+#     epochs=n_epochs,
+#     validation_data=validation_gen,
+#     validation_steps=validation_steps
+# )
+
 hist = model.fit(
     training_gen,
     steps_per_epoch=steps_per_epoch,
     epochs=n_epochs,
+    shuffle=True,
     validation_data=validation_gen,
-    validation_steps=validation_steps
+    validation_steps=validation_steps,
+    callbacks=[early_stop]
 )
 
-plot_training_history(hist)
+base_model.trainable = True
+for layer in base_model.layers[:-4]:
+    layer.trainable = False
+
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.00005),
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+hist_fine = model.fit(
+    training_gen,
+    steps_per_epoch=steps_per_epoch,
+    epochs=n_epochs_fine,
+    shuffle=True,
+    validation_data=validation_gen,
+    validation_steps=validation_steps,
+    callbacks=[early_stop]
+)
+
+plot_training_history(hist_fine)
 
 model_save_path = "saved_model/my_model.h5"
 save_model(model, model_save_path)
