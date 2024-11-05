@@ -10,7 +10,7 @@ on:
 
 jobs:
   train-evaluate:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, gpu]
     env:
       DATASET_EXISTS: ''
 
@@ -18,124 +18,75 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # PT 1
-      # check if dataset exists (predefined directory) and download depending on this
-      # After making sure we have the data, Launch tensorflow GPU container
-      # i.e. node.run("docker run -d --rm -p 8888:8888 --gpus all quay.io/jupyter/tensorflow-notebook:cuda-tensorflow-2.16.1") make this non-notebook
-      # something like this tensorflow/tensorflow:2.16.1-gpu --> need to pass dataset from paraserver to -v argument into container --> -v /path/on/host:/path/in/container
-      # Immediately run a command on the container (inside the container on the server) --> docker run --> commands inside the container
-
-      # Check and create dataset volume if necessary, then start the container in detached mode
-      - name: Start Docker Container for Training
-        id: start_container  # Assigns an ID for later reference
+      - name: Manage Dataset Volume and Download
+        id: manage_dataset
         run: |
-          docker volume create food11_data || true
           docker run -d --rm --name tensorflow_container \
             -v food11_data:/tmp/content/Food-11 \
-            -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
-      # Download dataset if not present
-      - name: Check and Download Dataset
-        run: |
-          docker exec tensorflow_container bash -c "
-            set -e;
-            if [ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]; then
-              echo 'Dataset already exists and is not empty. Skipping download.';
-            else
-              echo 'Dataset does not exist or is empty. Will download it.';
+          if docker exec tensorflow_container bash -c "[ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]"; then
+            echo "Volume 'food11_data' already contains data. Skipping download."
+          else
+            echo "Volume 'food11_data' is empty. Downloading dataset."
+
+            docker exec tensorflow_container bash -c "
+              set -e;
+              echo 'Downloading and setting up dataset...';
               mkdir -p /tmp/content/Food-11 && \
               apt-get update && \
-              apt-get install -y python3-pip unzip && \
               pip3 install gdown && \
-              echo 'Downloading dataset...' && \
               gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
-              echo 'Unzipping dataset...' && \
               unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
               echo 'Dataset downloaded and unzipped. Files included:' && \
-              ls -la /tmp/content/Food-11;  # List files after unzipping
-            fi;
+              ls -la /tmp/content/Food-11;
+            "
+          fi
+
+          docker stop tensorflow_container
+
+      - name: Clone Repository in Docker Container
+        run: |
+          docker exec tensorflow_container bash -c "
+            apt-get update && apt-get install -y git;
+            if [ -d 'workspace/src/image-classification-continuous-x' ]; then
+              echo 'Repository already exists. Updating...';
+              cd /workspace/image-classification-continuous-x && git pull origin main;
+            else
+              echo 'Cloning repository...';
+              git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
+            fi
           "
 
       - name: Install Dependencies
         run: |
-          docker exec tensorflow_container pip install -r /workspace/requirements_docker.txt
+          docker exec tensorflow_container pip install -r /workspace/src/image-classification-continuous-x/requirements_docker.txt
 
-      # Run the training script within the running container
       - name: Run Training Script
         run: |
-          docker exec tensorflow_container python /workspace/model_train.py
-
-      # - name: Run Docker container
-      #   run: |
-      #     docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace tensorflow/tensorflow:latest-gpu bash -c "echo 'Running in TensorFlow container'"
-
-      # - name: Check Current Directory
-      #   run: |
-      #     docker run --rm \
-      #       -v "${{ github.workspace }}:/workspace" \
-      #       -w /workspace \
-      #       tensorflow/tensorflow:latest-gpu bash -c "echo 'Current Directory:'; pwd"
-
-      # - name: List Files in Workspace
-      #   run: |
-      #     docker run --rm \
-      #       -v "${{ github.workspace }}:/workspace" \
-      #       -w /workspace \
-      #       tensorflow/tensorflow:latest-gpu bash -c "echo 'Listing files:'; ls -la /workspace"
-
-      # - name: Check and Download Dataset
-      #   run: |
-      #     docker volume create food11_data || true
-      #     docker run --rm \
-      #       -v food11_data:/tmp/content/Food-11 \
-      #       -v "${{ github.workspace }}:/workspace" \
-      #       -w /workspace \
-      #       tensorflow/tensorflow:latest-gpu bash -c "
-      #         set -e;
-      #         if [ -d '/tmp/content/Food-11' ] && [ "$(ls -A /tmp/content/Food-11)" ]; then
-      #           echo 'Dataset already exists and is not empty. Skipping download.';
-      #         else
-      #           echo 'Dataset does not exist or is empty. Will download it.';
-      #           mkdir -p /tmp/content/Food-11 && \
-      #           apt-get update && \
-      #           apt-get install -y python3-pip unzip && \
-      #           pip3 install gdown && \
-      #           echo 'Downloading dataset...' && \
-      #           gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
-      #           echo 'Unzipping dataset...' && \
-      #           unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
-      #           echo 'Dataset downloaded and unzipped. Files included:' && \
-      #           ls -la /tmp/content/Food-11;  # List files after unzipping
-      #         fi;
-      #       "
-
-      # # TRAIN MODEL IN CONTAINER
-      # - name: Run Training Script
-      #   run: |
-      #     docker exec -it <container_name> python /path/to/model_train.py
+          docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
 
       - name: Display Evaluation Results
         run: |
           cat evaluation_metrics.txt || echo "Evaluation metrics not available"
 
-      - name: Parse Evaluation Metrics
-        id: metrics
-        run: |
-          evaluation_accuracy=$(grep 'evaluation_accuracy' evaluation_metrics.txt | cut -d' ' -f2)
-          echo "::set-output name=evaluation_accuracy::$evaluation_accuracy"
-        continue-on-error: true
+      # - name: Parse Evaluation Metrics
+      #   id: metrics
+      #   run: |
+      #     evaluation_accuracy=$(grep 'evaluation_accuracy' evaluation_metrics.txt | cut -d' ' -f2)
+      #     echo "::set-output name=evaluation_accuracy::$evaluation_accuracy"
+      #   continue-on-error: true
 
-      - name: Display Evaluation Accuracy
-        run: |
-          echo "Evaluation Accuracy is: ${{ steps.metrics.outputs.evaluation_accuracy }}"
+      # - name: Display Evaluation Accuracy
+      #   run: |
+      #     echo "Evaluation Accuracy is: ${{ steps.metrics.outputs.evaluation_accuracy }}"
 
-      - name: Redeploy if Accuracy Meets Threshold
-      # made it 0.2 for now to check workflow
-        if: steps.metrics.outputs.evaluation_accuracy && steps.metrics.outputs.evaluation_accuracy >= 0.15
-        run: |
-          git config --local user.email "tin2294@gmail.com"
-          git config --local user.name "Ting Ting"
-          git tag -fa "redeploy" -m "Auto-redeploy from training workflow"
-          git push origin redeploy
+      # - name: Redeploy if Accuracy Meets Threshold
+      # # made it 0.2 for now to check workflow
+      #   if: steps.metrics.outputs.evaluation_accuracy && steps.metrics.outputs.evaluation_accuracy >= 0.15
+      #   run: |
+      #     git config --local user.email "tin2294@gmail.com"
+      #     git config --local user.name "Ting Ting"
+      #     git tag -fa "redeploy" -m "Auto-redeploy from training workflow"
+      #     git push origin redeploy
