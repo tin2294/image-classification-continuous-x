@@ -204,7 +204,7 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.savefig(filename)
     plt.close()
 
-def save_model(model, filepath):
+def save_model(model, base_dir):
     """Save the trained model to the specified filepath."""
     os.makedirs(base_dir, exist_ok=True)
 

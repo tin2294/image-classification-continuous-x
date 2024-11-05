@@ -20,10 +20,12 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    # DO NOT NEED
-    # - name: Log in to Docker Registry
-    #   run: |
-    #     echo "${{ secrets.GH_PAT }}" | docker login ghcr.io -u tin2294 --password-stdin
+    - name: Get Latest Model
+      id: get_latest_model
+      run: |
+        LATEST_MODEL=$(ls -Art saved_model/*.h5 | tail -n 1)
+        echo "Latest model path: $LATEST_MODEL"
+        echo "LATEST_MODEL=$LATEST_MODEL" >> $GITHUB_ENV
 
     # GET THE FRONT END PART WITH LATEST SOFTWARE
     # NEED TO GET THE LATEST MODEL
