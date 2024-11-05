@@ -45,26 +45,29 @@ jobs:
 
       - name: Check and Download Dataset
         run: |
+          docker volume create food11_data || true
           docker run --rm \
+            -v food11_data:/tmp/content/Food-11 \
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "
-              if [ -d 'content/Food-11' ]; then
-                echo 'Dataset already exists. Skipping download.';
+              if [ -d '/tmp/content/Food-11' ]; then
+                echo 'Dataset already exists in Docker volume. Skipping download.';
               else
                 echo 'Dataset does not exist. Will download it.';
-                mkdir -p content/Food-11 && \
+                mkdir -p /tmp/content/Food-11 && \
                 apt-get update && \
                 apt-get install -y python3-pip unzip && \
                 pip3 install gdown && \
-                gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip && \
-                unzip content/Food-11/dataset.zip -d content/Food-11;
+                gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
+                unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11;
               fi;
 
-              echo 'Listing files in content/Food-11:';
-              ls -la content/Food-11;
+              # Check if files were downloaded successfully
+              echo 'Listing files in /tmp/content/Food-11:';
+              ls -la /tmp/content/Food-11;
+              pwd;
             "
-
 
 
       # # TRAIN MODEL IN CONTAINER
