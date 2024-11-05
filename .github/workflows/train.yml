@@ -29,7 +29,7 @@ jobs:
         run: |
           docker run --rm --gpus all \
             -v "$(pwd):/workspace" \
-            tensorflow/tensorflow:latest-gpu /bin/bash"
+            tensorflow/tensorflow bash"
               echo 'Connected to Docker Container';
               echo 'Current Directory:'; pwd;
               echo 'Listing files:'; ls -la /workspace;
