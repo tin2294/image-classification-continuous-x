@@ -60,7 +60,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          docker exec tensorflow_container pip install matplotlib
+          docker exec tensorflow_container pip install -r /workspace/requirements_docker.txt
 
       # Run the training script within the running container
       - name: Run Training Script
@@ -116,9 +116,9 @@ jobs:
       #   run: |
       #     docker exec -it <container_name> python /path/to/model_train.py
 
-      # - name: Display Evaluation Results
-      #   run: |
-      #     cat evaluation_metrics.txt || echo "Evaluation metrics not available"
+      - name: Display Evaluation Results
+        run: |
+          cat evaluation_metrics.txt || echo "Evaluation metrics not available"
 
       # - name: Parse Evaluation Metrics
       #   id: metrics
