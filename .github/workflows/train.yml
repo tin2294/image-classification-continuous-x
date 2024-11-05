@@ -56,8 +56,6 @@ jobs:
             fi
           "
 
-          docker stop tensorflow_container
-
       # - name: Clone Repository in Docker Container
       #   run: |
       #     docker exec tensorflow_container bash -c "
@@ -78,6 +76,10 @@ jobs:
       - name: Run Training Script
         run: |
           docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
+
+      - name: Stop Container
+        run: |
+          docker stop tensorflow_container
 
       - name: Display Evaluation Results
         run: |
