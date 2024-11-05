@@ -31,7 +31,7 @@ jobs:
 
       - name: Check Current Directory
         run: |
-          docker run --rm --gpus all \
+          docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "echo 'Current Directory:'; pwd"
