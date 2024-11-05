@@ -110,6 +110,6 @@ evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 print(f"Evaluation Loss: {evaluation_loss}")
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
-with open("data/evaluation_metrics.txt", "w") as f:
+with open("evaluation_metrics.txt", "w") as f:
     f.write(f"evaluation_accuracy: {evaluation_accuracy}\n")
     f.write(f"evaluation_loss: {evaluation_loss}\n")
