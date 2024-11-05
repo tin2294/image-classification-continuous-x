@@ -25,55 +25,92 @@ jobs:
       # something like this tensorflow/tensorflow:2.16.1-gpu --> need to pass dataset from paraserver to -v argument into container --> -v /path/on/host:/path/in/container
       # Immediately run a command on the container (inside the container on the server) --> docker run --> commands inside the container
 
-      - name: Run Docker container
-        run: |
-          docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace tensorflow/tensorflow:latest-gpu bash -c "echo 'Running in TensorFlow container'"
-
-      - name: Check Current Directory
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}:/workspace" \
-            -w /workspace \
-            tensorflow/tensorflow:latest-gpu bash -c "echo 'Current Directory:'; pwd"
-
-      - name: List Files in Workspace
-        run: |
-          docker run --rm \
-            -v "${{ github.workspace }}:/workspace" \
-            -w /workspace \
-            tensorflow/tensorflow:latest-gpu bash -c "echo 'Listing files:'; ls -la /workspace"
-
-      - name: Check and Download Dataset
+      # Check and create dataset volume if necessary, then start the container in detached mode
+      - name: Start Docker Container for Training
+        id: start_container  # Assigns an ID for later reference
         run: |
           docker volume create food11_data || true
-          docker run --rm \
+          docker run -d --rm --name tensorflow_container \
             -v food11_data:/tmp/content/Food-11 \
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
-            tensorflow/tensorflow:latest-gpu bash -c "
-              set -e;
-              if [ -d '/tmp/content/Food-11' ] && [ "$(ls -A /tmp/content/Food-11)" ]; then
-                echo 'Dataset already exists and is not empty. Skipping download.';
-              else
-                echo 'Dataset does not exist or is empty. Will download it.';
-                mkdir -p /tmp/content/Food-11 && \
-                apt-get update && \
-                apt-get install -y python3-pip unzip && \
-                pip3 install gdown && \
-                echo 'Downloading dataset...' && \
-                gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
-                echo 'Unzipping dataset...' && \
-                unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
-                echo 'Dataset downloaded and unzipped. Files included:' && \
-                ls -la /tmp/content/Food-11;  # List files after unzipping
-              fi;
-            "
+            tensorflow/tensorflow:latest-gpu tail -f /dev/null
+
+      # Download dataset if not present
+      - name: Check and Download Dataset
+        run: |
+          docker exec tensorflow_container bash -c "
+            set -e;
+            if [ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]; then
+              echo 'Dataset already exists and is not empty. Skipping download.';
+            else
+              echo 'Dataset does not exist or is empty. Will download it.';
+              mkdir -p /tmp/content/Food-11 && \
+              apt-get update && \
+              apt-get install -y python3-pip unzip && \
+              pip3 install gdown && \
+              echo 'Downloading dataset...' && \
+              gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
+              echo 'Unzipping dataset...' && \
+              unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
+              echo 'Dataset downloaded and unzipped. Files included:' && \
+              ls -la /tmp/content/Food-11;  # List files after unzipping
+            fi;
+          "
+
+      # Run the training script within the running container
+      - name: Run Training Script
+        run: |
+          docker exec tensorflow_container python /workspace/model_train.py
+
+      # - name: Run Docker container
+      #   run: |
+      #     docker run --rm -v "${{ github.workspace }}:/workspace" -w /workspace tensorflow/tensorflow:latest-gpu bash -c "echo 'Running in TensorFlow container'"
+
+      # - name: Check Current Directory
+      #   run: |
+      #     docker run --rm \
+      #       -v "${{ github.workspace }}:/workspace" \
+      #       -w /workspace \
+      #       tensorflow/tensorflow:latest-gpu bash -c "echo 'Current Directory:'; pwd"
+
+      # - name: List Files in Workspace
+      #   run: |
+      #     docker run --rm \
+      #       -v "${{ github.workspace }}:/workspace" \
+      #       -w /workspace \
+      #       tensorflow/tensorflow:latest-gpu bash -c "echo 'Listing files:'; ls -la /workspace"
+
+      # - name: Check and Download Dataset
+      #   run: |
+      #     docker volume create food11_data || true
+      #     docker run --rm \
+      #       -v food11_data:/tmp/content/Food-11 \
+      #       -v "${{ github.workspace }}:/workspace" \
+      #       -w /workspace \
+      #       tensorflow/tensorflow:latest-gpu bash -c "
+      #         set -e;
+      #         if [ -d '/tmp/content/Food-11' ] && [ "$(ls -A /tmp/content/Food-11)" ]; then
+      #           echo 'Dataset already exists and is not empty. Skipping download.';
+      #         else
+      #           echo 'Dataset does not exist or is empty. Will download it.';
+      #           mkdir -p /tmp/content/Food-11 && \
+      #           apt-get update && \
+      #           apt-get install -y python3-pip unzip && \
+      #           pip3 install gdown && \
+      #           echo 'Downloading dataset...' && \
+      #           gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
+      #           echo 'Unzipping dataset...' && \
+      #           unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
+      #           echo 'Dataset downloaded and unzipped. Files included:' && \
+      #           ls -la /tmp/content/Food-11;  # List files after unzipping
+      #         fi;
+      #       "
 
       # # TRAIN MODEL IN CONTAINER
       # - name: Run Training Script
-      #   # Make sure these are run inside the container (can use docker exec --> specify container name)
       #   run: |
-      #     python model_train.py
+      #     docker exec -it <container_name> python /path/to/model_train.py
 
       # - name: Display Evaluation Results
       #   run: |
