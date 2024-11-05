@@ -210,7 +210,7 @@ def save_model(model, base_dir):
     os.makedirs(base_dir, exist_ok=True)
 
     timestamp = int(time.time())
-    versioned_model_name = f"{model_name}_v{timestamp}.h5"
+    versioned_model_name = f"model_v{timestamp}.h5"
     model_save_path = os.path.join(base_dir, versioned_model_name)
 
     model.save(model_save_path)
