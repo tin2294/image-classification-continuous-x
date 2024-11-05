@@ -51,16 +51,16 @@ jobs:
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "
               if [ -d 'content/Food-11' ]; then
-                echo 'Dataset already exists. Skipping download.' && echo 'DATASET_EXISTS=true' >> /tmp/github_env;
+                echo 'Dataset already exists. Skipping download.' && echo 'DATASET_EXISTS=true' >> $GITHUB_ENV;
               else
-                echo 'Dataset does not exist. Will download it.' && echo 'DATASET_EXISTS=false' >> /tmp/github_env;
+                echo 'Dataset does not exist. Will download it.' && echo 'DATASET_EXISTS=false' >> $GITHUB_ENV;
               fi
             "
 
       - name: Download Dataset
-        if: steps.check-dataset.outputs.DATASET_EXISTS == 'false'
+        if: env.DATASET_EXISTS == 'false'
         run: |
-          docker run --rm --gpus all \
+          docker run --rm \
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "
