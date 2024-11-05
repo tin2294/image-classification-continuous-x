@@ -71,7 +71,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          docker exec tensorflow_container pip install -r /workspace/src/image-classification-continuous-x/requirements_docker.txt
+          docker exec tensorflow_container pip install -r workspace/src/image-classification-continuous-x/requirements_docker.txt
 
       - name: Run Training Script
         run: |
