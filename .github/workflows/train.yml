@@ -27,9 +27,8 @@ jobs:
 
       - name: Check and Download Dataset in Docker Container
         run: |
-          docker run -i --rm --gpus all \
-            -v "${{ github.workspace }}:/workspace" \
-            -w /workspace \
+          docker run --rm --gpus all \
+            -v "$(pwd):/workspace" \
             tensorflow/tensorflow:latest-gpu /bin/bash"
               echo 'Connected to Docker Container';
               echo 'Current Directory:'; pwd;
