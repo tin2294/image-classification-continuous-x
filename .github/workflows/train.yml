@@ -45,10 +45,6 @@ jobs:
             "
           fi
 
-          docker stop tensorflow_container
-
-      - name: Clone Repository in Docker Container
-        run: |
           docker exec tensorflow_container bash -c "
             apt-get update && apt-get install -y git;
             if [ -d 'workspace/src/image-classification-continuous-x' ]; then
@@ -59,6 +55,21 @@ jobs:
               git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
             fi
           "
+
+          docker stop tensorflow_container
+
+      # - name: Clone Repository in Docker Container
+      #   run: |
+      #     docker exec tensorflow_container bash -c "
+      #       apt-get update && apt-get install -y git;
+      #       if [ -d 'workspace/src/image-classification-continuous-x' ]; then
+      #         echo 'Repository already exists. Updating...';
+      #         cd /workspace/image-classification-continuous-x && git pull origin main;
+      #       else
+      #         echo 'Cloning repository...';
+      #         git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
+      #       fi
+      #     "
 
       - name: Install Dependencies
         run: |
