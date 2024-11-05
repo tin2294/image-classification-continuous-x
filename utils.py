@@ -101,26 +101,52 @@ def prepare_data_generators(training_dir, validation_dir, evaluation_dir, input_
 
     return training_gen, validation_gen, evaluation_gen
 
+# def build_model(input_size, num_classes):
+#     """
+#     Build a simple CNN model for image classification.
+#     """
+#     model = tf.keras.Sequential([
+#         tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
+#         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+#         tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+#         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+#         tf.keras.layers.Flatten(),
+#         tf.keras.layers.Dense(128, activation='relu'),
+#         tf.keras.layers.Dense(num_classes, activation='softmax')
+#     ])
+    
+#     model.compile(optimizer='adam',
+#                   loss='sparse_categorical_crossentropy',
+#                   metrics=['accuracy'])
+    
+#     return model
+
 def build_model(input_size, num_classes):
-    """
-    Build a simple CNN model for image classification.
-    """
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
+        tf.keras.layers.BatchNormalization(),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
         tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.BatchNormalization(),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+        tf.keras.layers.Conv2D(128, (3, 3), activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
+
         tf.keras.layers.Dense(num_classes, activation='softmax')
     ])
-    
-    model.compile(optimizer='adam',
+
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
-    
-    return model
 
+    return model
 
 def plot_training_history(hist, filename='training_history.png'):
     """
