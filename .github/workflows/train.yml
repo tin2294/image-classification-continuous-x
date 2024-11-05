@@ -60,13 +60,11 @@ jobs:
                 apt-get install -y python3-pip unzip && \
                 pip3 install gdown && \
                 gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
-                unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11;
+                unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 || { echo 'Download or unzip failed!'; exit 1; };
               fi;
 
-              # Check if files were downloaded successfully
               echo 'Listing files in /tmp/content/Food-11:';
               ls -la /tmp/content/Food-11;
-              pwd;
             "
 
 
