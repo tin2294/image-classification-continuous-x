@@ -122,32 +122,32 @@ def prepare_data_generators(training_dir, validation_dir, evaluation_dir, input_
 #     return model
 
 
-# def build_model(input_size, num_classes):
-#     model = tf.keras.Sequential([
-#         tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
-#         tf.keras.layers.BatchNormalization(),
-#         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+def build_model(input_size, num_classes):
+    model = tf.keras.Sequential([
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
 
-#         tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
-#         tf.keras.layers.BatchNormalization(),
-#         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
 
-#         tf.keras.layers.Conv2D(128, (3, 3), activation='relu'),
-#         tf.keras.layers.BatchNormalization(),
-#         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Conv2D(128, (3, 3), activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
 
-#         tf.keras.layers.Flatten(),
-#         tf.keras.layers.Dense(256, activation='relu'),
-#         tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dropout(0.5),
 
-#         tf.keras.layers.Dense(num_classes, activation='softmax')
-#     ])
+        tf.keras.layers.Dense(num_classes, activation='softmax')
+    ])
 
-#     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
-#                   loss='sparse_categorical_crossentropy',
-#                   metrics=['accuracy'])
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
 
-#     return model
+    return model
 
 def build_transfer_model(input_img_size, num_classes):
     # Step 1: Load Pretrained VGG16 Base Model
