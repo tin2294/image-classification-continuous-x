@@ -28,21 +28,20 @@ jobs:
       - name: Check and Download Dataset in Docker Container
         run: |
           docker run --rm --gpus all \
-            -v "${{ github.workspace }}:/home/jovyan/work" \
-            -w /home/jovyan/work \
-            quay.io/jupyter/tensorflow-notebook:cuda-tensorflow-2.16.1 \
-            /bin/bash -c "
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            tensorflow/tensorflow:latest-gpu /bin/bash -c "
               echo 'Connected to Docker Container' &&
               echo 'Current Directory:' &&
               pwd &&
               echo 'Listing files:' &&
-              ls -la /home/jovyan/work &&
+              ls -la /workspace &&
               if [ -d 'content/Food-11' ]; then
                 echo 'Dataset already exists. Skipping download.' &&
-                echo 'DATASET_EXISTS=true' >> /tmp/github_env &&
+                echo 'DATASET_EXISTS=true' >> /workspace/github_env &&
               else
                 echo 'Dataset does not exist. Will download it.' &&
-                echo 'DATASET_EXISTS=false' >> /tmp/github_env &&
+                echo 'DATASET_EXISTS=false' >> /workspace/github_env &&
                 mkdir -p content/Food-11 &&
                 apt-get update && \
                 apt-get install -y gdown unzip && \
