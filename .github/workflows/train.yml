@@ -51,10 +51,10 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "
-              if [ -d '/tmp/content/Food-11' ]; then
-                echo 'Dataset already exists in Docker volume. Skipping download.';
+              if [ -d '/tmp/content/Food-11' ] && [ \$(ls -A /tmp/content/Food-11 | wc -l) -gt 0 ]; then
+                echo 'Dataset already exists and is not empty. Skipping download.';
               else
-                echo 'Dataset does not exist. Will download it.';
+                echo 'Dataset does not exist or is empty. Will download it.';
                 mkdir -p /tmp/content/Food-11 && \
                 apt-get update && \
                 apt-get install -y python3-pip unzip && \
@@ -66,7 +66,6 @@ jobs:
               echo 'Listing files in /tmp/content/Food-11:';
               ls -la /tmp/content/Food-11;
             "
-
 
       # # TRAIN MODEL IN CONTAINER
       # - name: Run Training Script
