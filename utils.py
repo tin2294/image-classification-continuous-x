@@ -5,6 +5,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import shutil
 import keras
+import time
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
