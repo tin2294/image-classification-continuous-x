@@ -83,7 +83,7 @@ jobs:
 
       - name: Display Evaluation Results
         run: |
-          cat evaluation_metrics.txt || echo "Evaluation metrics not available"
+          cat workspace/src/evaluation_metrics.txt || echo "Evaluation metrics not available"
 
       # - name: Parse Evaluation Metrics
       #   id: metrics
