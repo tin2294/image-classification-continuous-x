@@ -24,27 +24,8 @@ jobs:
       # i.e. node.run("docker run -d --rm -p 8888:8888 --gpus all quay.io/jupyter/tensorflow-notebook:cuda-tensorflow-2.16.1") make this non-notebook
       # something like this tensorflow/tensorflow:2.16.1-gpu --> need to pass dataset from paraserver to -v argument into container --> -v /path/on/host:/path/in/container
       # Immediately run a command on the container (inside the container on the server) --> docker run --> commands inside the container
-      - name: Check for Dataset
-        id: check_dataset
-        run: |
-          if [ -d "content/Food-11" ]; then
-            echo "Dataset already exists. Skipping download."
-            echo "DATASET_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "Dataset does not exist. Will download it."
-            echo "DATASET_EXISTS=false" >> $GITHUB_ENV
-          fi
 
-      - name: Download Dataset
-        if: env.DATASET_EXISTS == 'false'  # Only run this step if the dataset doesn't exist
-        run: |
-          mkdir -p content/Food-11
-          gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
-          unzip content/Food-11/dataset.zip -d content/Food-11
-        working-directory: .
-
-      # Run a Docker container to confirm connectivity
-      - name: Connect to Docker Container
+      - name: Check and Download Dataset in Docker Container
         run: |
           docker run --rm --gpus all \
             -v "${{ github.workspace }}:/home/jovyan/work" \
@@ -56,9 +37,19 @@ jobs:
               pwd &&
               echo 'Listing files:' &&
               ls -la /home/jovyan/work &&
-              echo 'SSH Address:' &&
-              hostname -I
+              if [ -d 'content/Food-11' ]; then
+                echo 'Dataset already exists. Skipping download.' &&
+                echo 'DATASET_EXISTS=true' >> /tmp/github_env &&
+              else
+                echo 'Dataset does not exist. Will download it.' &&
+                echo 'DATASET_EXISTS=false' >> /tmp/github_env &&
+                mkdir -p content/Food-11 &&
+                apt-get update && apt-get install -y gdown unzip &&
+                gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip &&
+                unzip content/Food-11/dataset.zip -d content/Food-11
+              fi
             "
+
       # WE DO NOT NEED TO BE REINSTALLING ALL OF THIS HERE - ALL in container (tf should include anyways)
 
       # OLD STUFF
