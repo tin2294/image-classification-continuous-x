@@ -206,5 +206,11 @@ def plot_training_history(hist, filename='training_history.png'):
 
 def save_model(model, filepath):
     """Save the trained model to the specified filepath."""
-    model.save(filepath)
-    print(f"Model saved to {filepath}")
+    os.makedirs(base_dir, exist_ok=True)
+
+    timestamp = int(time.time())
+    versioned_model_name = f"{model_name}_v{timestamp}.h5"
+    model_save_path = os.path.join(base_dir, versioned_model_name)
+
+    model.save(model_save_path)
+    print(f"Model saved to {model_save_path}")

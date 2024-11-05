@@ -12,6 +12,7 @@ from utils import (
     save_model
 )
 from tensorflow.keras.callbacks import EarlyStopping
+from modelstore import ModelStore
 
 BATCH_SIZE = 128
 INPUT_IMG_SIZE = 112
@@ -54,8 +55,8 @@ model = build_model(INPUT_IMG_SIZE, len(CLASSES))
 num_training_samples = training_gen.samples
 num_validation_samples = validation_gen.samples
 # short to make sure workflows are working
-# n_epochs = 3
-n_epochs = 10
+n_epochs = 3
+# n_epochs = 10
 # n_epochs_fine = 8
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
@@ -100,11 +101,10 @@ hist = model.fit(
 #     callbacks=[early_stop]
 # )
 
-plot_training_history(hist_fine)
+plot_training_history(hist)
 
-model_save_path = "saved_model/my_model.h5"
-save_model(model, model_save_path)
-print(f"Model saved to {model_save_path}")
+model_storage_dir = "saved_model"
+save_model(model, model_storage_dir, "my_model")
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 print(f"Evaluation Loss: {evaluation_loss}")
