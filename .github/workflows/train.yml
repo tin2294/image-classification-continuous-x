@@ -51,6 +51,7 @@ jobs:
             -v "${{ github.workspace }}:/workspace" \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "
+              set -e;
               if [ -d '/tmp/content/Food-11' ] && [ "$(ls -A /tmp/content/Food-11)" ]; then
                 echo 'Dataset already exists and is not empty. Skipping download.';
               else
@@ -63,11 +64,9 @@ jobs:
                 gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
                 echo 'Unzipping dataset...' && \
                 unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
-                echo 'Dataset downloaded and unzipped.';
+                echo 'Dataset downloaded and unzipped. Files included:' && \
+                ls -la /tmp/content/Food-11;  # List files after unzipping
               fi;
-
-              echo 'Listing files in /tmp/content/Food-11:';
-              ls -la /tmp/content/Food-11;
             "
 
       # # TRAIN MODEL IN CONTAINER
