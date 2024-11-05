@@ -104,7 +104,7 @@ hist = model.fit(
 plot_training_history(hist)
 
 model_storage_dir = "saved_model"
-save_model(model, model_storage_dir, "my_model")
+save_model(model, model_storage_dir)
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 print(f"Evaluation Loss: {evaluation_loss}")
