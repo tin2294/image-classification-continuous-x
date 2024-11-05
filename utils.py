@@ -121,6 +121,7 @@ def prepare_data_generators(training_dir, validation_dir, evaluation_dir, input_
     
 #     return model
 
+
 def build_model(input_size, num_classes):
     model = tf.keras.Sequential([
         tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
