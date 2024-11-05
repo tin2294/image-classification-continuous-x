@@ -11,6 +11,8 @@ on:
 jobs:
   train-evaluate:
     runs-on: self-hosted
+    env:
+      DATASET_EXISTS: ''
 
     steps:
       - name: Checkout Repository
@@ -22,13 +24,24 @@ jobs:
       # i.e. node.run("docker run -d --rm -p 8888:8888 --gpus all quay.io/jupyter/tensorflow-notebook:cuda-tensorflow-2.16.1") make this non-notebook
       # something like this tensorflow/tensorflow:2.16.1-gpu --> need to pass dataset from paraserver to -v argument into container --> -v /path/on/host:/path/in/container
       # Immediately run a command on the container (inside the container on the server) --> docker run --> commands inside the container
-      # - name: Download dataset
-      #   run: |
-      #     mkdir -p content/Food-11
-      #     gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
-      #     unzip content/Food-11/dataset.zip -d content/Food-11
-      #   working-directory: .
+      - name: Check for Dataset
+        id: check_dataset
+        run: |
+          if [ -d "content/Food-11" ]; then
+            echo "Dataset already exists. Skipping download."
+            echo "DATASET_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "Dataset does not exist. Will download it."
+            echo "DATASET_EXISTS=false" >> $GITHUB_ENV
+          fi
 
+      - name: Download Dataset
+        if: env.DATASET_EXISTS == 'false'  # Only run this step if the dataset doesn't exist
+        run: |
+          mkdir -p content/Food-11
+          gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
+          unzip content/Food-11/dataset.zip -d content/Food-11
+        working-directory: .
 
       # - name: Run Training in TensorFlow GPU Container
       #   run: |
@@ -45,49 +58,52 @@ jobs:
       #         python model_train.py
       #       "
       # WE DO NOT NEED TO BE REINSTALLING ALL OF THIS HERE - ALL in container (tf should include anyways)
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.8'
 
-      - name: Install Dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+      # OLD STUFF
+      # - name: Set up Python
+      #   uses: actions/setup-python@v4
+      #   with:
+      #     python-version: '3.8'
 
-      - name: Download dataset
-        run: |
-          mkdir -p content/Food-11
-          gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
-          unzip content/Food-11/dataset.zip -d content/Food-11
-        working-directory: .
+      # - name: Install Dependencies
+      #   run: |
+      #     python -m pip install --upgrade pip
+      #     pip install -r requirements.txt
 
-      # TRAIN MODEL IN CONTAINER
-      - name: Run Training Script
-        # Make sure these are run inside the container (can use docker exec --> specify container name)
-        run: |
-          python model_train.py
+      # - name: Download dataset
+      #   run: |
+      #     mkdir -p content/Food-11
+      #     gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip
+      #     unzip content/Food-11/dataset.zip -d content/Food-11
+      #   working-directory: .
+      # END OF OLD STUFF
 
-      - name: Display Evaluation Results
-        run: |
-          cat evaluation_metrics.txt || echo "Evaluation metrics not available"
+      # # TRAIN MODEL IN CONTAINER
+      # - name: Run Training Script
+      #   # Make sure these are run inside the container (can use docker exec --> specify container name)
+      #   run: |
+      #     python model_train.py
 
-      - name: Parse Evaluation Metrics
-        id: metrics
-        run: |
-          evaluation_accuracy=$(grep 'evaluation_accuracy' evaluation_metrics.txt | cut -d' ' -f2)
-          echo "::set-output name=evaluation_accuracy::$evaluation_accuracy"
-        continue-on-error: true
+      # - name: Display Evaluation Results
+      #   run: |
+      #     cat evaluation_metrics.txt || echo "Evaluation metrics not available"
 
-      - name: Display Evaluation Accuracy
-        run: |
-          echo "Evaluation Accuracy is: ${{ steps.metrics.outputs.evaluation_accuracy }}"
+      # - name: Parse Evaluation Metrics
+      #   id: metrics
+      #   run: |
+      #     evaluation_accuracy=$(grep 'evaluation_accuracy' evaluation_metrics.txt | cut -d' ' -f2)
+      #     echo "::set-output name=evaluation_accuracy::$evaluation_accuracy"
+      #   continue-on-error: true
 
-      - name: Redeploy if Accuracy Meets Threshold
-      # made it 0.2 for now to check workflow
-        if: steps.metrics.outputs.evaluation_accuracy && steps.metrics.outputs.evaluation_accuracy >= 0.2
-        run: |
-          git config --local user.email "tin2294@gmail.com"
-          git config --local user.name "Ting Ting"
-          git tag -fa "redeploy" -m "Auto-redeploy from training workflow"
-          git push origin redeploy
+      # - name: Display Evaluation Accuracy
+      #   run: |
+      #     echo "Evaluation Accuracy is: ${{ steps.metrics.outputs.evaluation_accuracy }}"
+
+      # - name: Redeploy if Accuracy Meets Threshold
+      # # made it 0.2 for now to check workflow
+      #   if: steps.metrics.outputs.evaluation_accuracy && steps.metrics.outputs.evaluation_accuracy >= 0.2
+      #   run: |
+      #     git config --local user.email "tin2294@gmail.com"
+      #     git config --local user.name "Ting Ting"
+      #     git tag -fa "redeploy" -m "Auto-redeploy from training workflow"
+      #     git push origin redeploy
