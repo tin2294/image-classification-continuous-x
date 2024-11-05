@@ -36,6 +36,41 @@ jobs:
             -w /workspace \
             tensorflow/tensorflow:latest-gpu bash -c "echo 'Current Directory:'; pwd"
 
+      - name: List Files in Workspace
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            tensorflow/tensorflow:latest-gpu bash -c "echo 'Listing files:'; ls -la /workspace"
+
+      - name: Check for Dataset
+        id: check-dataset
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            tensorflow/tensorflow:latest-gpu bash -c "
+              if [ -d 'content/Food-11' ]; then
+                echo 'Dataset already exists. Skipping download.' && echo 'DATASET_EXISTS=true' >> /tmp/github_env;
+              else
+                echo 'Dataset does not exist. Will download it.' && echo 'DATASET_EXISTS=false' >> /tmp/github_env;
+              fi
+            "
+
+      - name: Download Dataset
+        if: steps.check-dataset.outputs.DATASET_EXISTS == 'false'
+        run: |
+          docker run --rm --gpus all \
+            -v "${{ github.workspace }}:/workspace" \
+            -w /workspace \
+            tensorflow/tensorflow:latest-gpu bash -c "
+              mkdir -p content/Food-11 && \
+              apt-get update && \
+              apt-get install -y gdown unzip && \
+              gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O content/Food-11/dataset.zip && \
+              unzip content/Food-11/dataset.zip -d content/Food-11;
+            "
+
       # - name: Check and Download Dataset in Docker Container
       #   run: |
       #     docker run --rm --gpus all \
