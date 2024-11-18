@@ -10,8 +10,8 @@ on:
 
 jobs:
   train-evaluate:
-    runs-on: self-hosted
-    # runs-on: [self-hosted, gpu]
+    # runs-on: self-hosted
+    runs-on: gpu-p100
     env:
       DATASET_EXISTS: ''
 
