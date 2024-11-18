@@ -107,7 +107,7 @@ model_storage_dir = "saved_model"
 save_model(model, model_storage_dir)
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
-print(f"Evaluation Loss: {evaluation_loss}")
+print(f"Evaluation Loss: {evaluation_loss}", os.getcwd())
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
 with open("evaluation_metrics.txt", "w") as f:
