@@ -56,7 +56,7 @@ num_training_samples = training_gen.samples
 num_validation_samples = validation_gen.samples
 # short to make sure workflows are working
 # n_epochs = 2
-n_epochs = 10
+n_epochs = 15
 # n_epochs_fine = 8
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
