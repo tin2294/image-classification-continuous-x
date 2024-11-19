@@ -103,7 +103,8 @@ hist_fine = model.fit(
 )
 
 plot_training_history(hist)
-print("Current working directory:", os.getcwd())
+current_dir = os.getcwd()
+print("Current working directory:", current_dir)
 print("Contents of the directory:")
 for item in os.listdir(current_dir):
     item_path = os.path.join(current_dir, item)
