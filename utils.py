@@ -73,13 +73,15 @@ def create_image_generator(directory, input_size, batch_size):
 
     datagen = tf.keras.preprocessing.image.ImageDataGenerator(
         rescale=1.0 / 255,
-        rotation_range=2,
-        zoom_range=0.25,
-        width_shift_range=0.25,
-        height_shift_range=0.25,
-        shear_range=0.25,
+        rotation_range=30,
+        zoom_range=0.4,
+        width_shift_range=0.3,
+        height_shift_range=0.3,
+        shear_range=0.3,
         horizontal_flip=True,
-        fill_mode="nearest")
+        brightness_range=[0.8, 1.2],
+        fill_mode="nearest"
+    )
 
     generator = datagen.flow_from_directory(
         directory,
@@ -125,11 +127,7 @@ def prepare_data_generators(training_dir, validation_dir, evaluation_dir, input_
 
 def build_model(input_size, num_classes):
     model = tf.keras.Sequential([
-        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-
-        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
 
@@ -137,8 +135,12 @@ def build_model(input_size, num_classes):
         tf.keras.layers.BatchNormalization(),
         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
 
+        tf.keras.layers.Conv2D(256, (3, 3), activation='relu'),
+        tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
         tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(256, activation='relu'),
+        tf.keras.layers.Dense(512, activation='relu'),
         tf.keras.layers.Dropout(0.5),
 
         tf.keras.layers.Dense(num_classes, activation='softmax')
@@ -147,27 +149,24 @@ def build_model(input_size, num_classes):
     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
-
     return model
 
 def build_transfer_model(input_img_size, num_classes):
-    # Step 1: Load Pretrained VGG16 Base Model
-    base_model = tf.keras.applications.VGG16(
+    base_model = tf.keras.applications.EfficientNetB0(
         input_shape=(input_img_size, input_img_size, 3),
-        include_top=False,  # Exclude the VGG16 dense layers
-        pooling='avg'       # Global average pooling for reducing dimensions
+        include_top=False,
+        pooling='avg'
     )
-    base_model.trainable = False  # Freeze all layers initially
+    base_model.trainable = False
 
-    # Step 2: Add Custom Layers on Top
     model = tf.keras.models.Sequential([
         base_model,
+        tf.keras.layers.Dense(256, activation='relu'),
         tf.keras.layers.Dropout(0.5),
         tf.keras.layers.Dense(num_classes, activation='softmax')
     ])
 
-    # Step 3: Compile the Model
-    model.compile(optimizer='adam',
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
                   loss='sparse_categorical_crossentropy',
                   metrics=['accuracy'])
     return model

@@ -10,15 +10,11 @@ on:
 
 jobs:
   train-evaluate:
-    # runs-on: self-hosted
     runs-on: gpu-p100
     env:
       DATASET_EXISTS: ''
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
       - name: Manage Dataset Volume and Download
         id: manage_dataset
         run: |

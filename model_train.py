@@ -55,8 +55,8 @@ model = build_model(INPUT_IMG_SIZE, len(CLASSES))
 num_training_samples = training_gen.samples
 num_validation_samples = validation_gen.samples
 # short to make sure workflows are working
-n_epochs = 3
-# n_epochs = 15
+# n_epochs = 3
+n_epochs = 10
 # n_epochs_fine = 8
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
@@ -103,7 +103,7 @@ hist = model.fit(
 
 plot_training_history(hist)
 print("Current working directory:", os.getcwd())
-model_storage_dir = "saved_model"
+model_storage_dir = "src/saved_model"
 save_model(model, model_storage_dir)
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
