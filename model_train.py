@@ -165,10 +165,9 @@ for item in os.listdir(gchild_dir_path):
 print(f"Evaluation Loss: {evaluation_loss}", os.getcwd())
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
-output_dir = os.path.join(current_directory, "workspace/src")
-os.makedirs(output_dir, exist_ok=True)  # Create the directory if it doesn't exist
+root_directory = "/home/cc/actions-runner/_work/image-classification-continuous-x/image-classification-continuous-x"
 
-file_path = os.path.join(output_dir, "evaluation_metrics.txt")
+file_path = os.path.join(root_directory, "evaluation_metrics.txt")
 
 with open(file_path, "w") as f:
     f.write(f"evaluation_accuracy: {evaluation_accuracy}\n")
