@@ -57,8 +57,8 @@ num_training_samples = training_gen.samples
 num_validation_samples = validation_gen.samples
 # short to make sure workflows are working
 # n_epochs = 3
-n_epochs = 10
-n_epochs_fine = 8
+n_epochs = 5
+n_epochs_fine = 3
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
 validation_steps = num_validation_samples // BATCH_SIZE
@@ -127,6 +127,24 @@ for item in os.listdir(current_dir):
         print(f"{item} (File)")
     else:
         print(f"{item} (Other)")
+
+child_directory = "workspace"
+
+# Get the absolute path of the child directory
+child_dir_path = os.path.join(current_dir, child_directory)
+
+print("Child directory path:", child_dir_path)
+
+print("Contents of the child directory:")
+for item in os.listdir(child_dir_path):
+    item_path = os.path.join(child_dir_path, item)
+    if os.path.isdir(item_path):
+        print(f"{item}/ (Directory)")
+    elif os.path.isfile(item_path):
+        print(f"{item} (File)")
+    else:
+        print(f"{item} (Other)")
+
 print(f"Evaluation Loss: {evaluation_loss}", os.getcwd())
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 

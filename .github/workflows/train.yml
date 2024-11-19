@@ -68,6 +68,8 @@ jobs:
         run: |
           cat workspace/src/evaluation_metrics.txt || echo "Evaluation metrics not available"
           cat workspace/workspace/src/evaluation_metrics.txt || echo "Evaluation metrics not available"
+          cat src/evaluation_metrics.txt || echo "Evaluation metrics not available"
+          cat workspace/evaluation_metrics.txt || echo "Evaluation metrics not available"
           cat evaluation_metrics.txt || echo "Evaluation metrics not available"
 
       # - name: Parse Evaluation Metrics
