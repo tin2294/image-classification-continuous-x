@@ -11,6 +11,7 @@ from utils import (
     plot_training_history,
     save_model
 )
+import tensorflow as tf
 from tensorflow.keras.callbacks import EarlyStopping
 from modelstore import ModelStore
 
