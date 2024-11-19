@@ -6,7 +6,7 @@ from utils import (
     plot_sample_images,
     prepare_data_generators,
     build_model,
-    # build_transfer_model,
+    build_transfer_model,
     reorganize_files,
     plot_training_history,
     save_model
@@ -47,8 +47,8 @@ print(f"Training generator has {training_gen.samples} samples.")
 print(f"Validation generator has {validation_gen.samples} samples.")
 
 # Build and train model
-model = build_model(INPUT_IMG_SIZE, len(CLASSES))
-# model = build_transfer_model(INPUT_IMG_SIZE, len(CLASSES))
+# model = build_model(INPUT_IMG_SIZE, len(CLASSES))
+model = build_transfer_model(INPUT_IMG_SIZE, len(CLASSES))
 
 
 # Calculate number of steps
@@ -57,52 +57,61 @@ num_validation_samples = validation_gen.samples
 # short to make sure workflows are working
 # n_epochs = 3
 n_epochs = 10
-# n_epochs_fine = 8
+n_epochs_fine = 8
 
 steps_per_epoch = num_training_samples // BATCH_SIZE
 validation_steps = num_validation_samples // BATCH_SIZE
 
-# early_stop = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
+early_stop = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
 
 # Fit the model
-hist = model.fit(
-    training_gen,
-    steps_per_epoch=steps_per_epoch,
-    epochs=n_epochs,
-    validation_data=validation_gen,
-    validation_steps=validation_steps
-)
-
 # hist = model.fit(
 #     training_gen,
 #     steps_per_epoch=steps_per_epoch,
 #     epochs=n_epochs,
-#     shuffle=True,
 #     validation_data=validation_gen,
-#     validation_steps=validation_steps,
-#     callbacks=[early_stop]
+#     validation_steps=validation_steps
 # )
 
-# model.trainable = True
-# for layer in model.layers[:-4]:
-#     layer.trainable = False
+hist = model.fit(
+    training_gen,
+    steps_per_epoch=steps_per_epoch,
+    epochs=n_epochs,
+    shuffle=True,
+    validation_data=validation_gen,
+    validation_steps=validation_steps,
+    callbacks=[early_stop]
+)
 
-# model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.00005),
-#               loss='sparse_categorical_crossentropy',
-#               metrics=['accuracy'])
+model.trainable = True
+for layer in model.layers[:-4]:
+    layer.trainable = False
 
-# hist_fine = model.fit(
-#     training_gen,
-#     steps_per_epoch=steps_per_epoch,
-#     epochs=n_epochs_fine,
-#     shuffle=True,
-#     validation_data=validation_gen,
-#     validation_steps=validation_steps,
-#     callbacks=[early_stop]
-# )
+model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.00005),
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+hist_fine = model.fit(
+    training_gen,
+    steps_per_epoch=steps_per_epoch,
+    epochs=n_epochs_fine,
+    shuffle=True,
+    validation_data=validation_gen,
+    validation_steps=validation_steps,
+    callbacks=[early_stop]
+)
 
 plot_training_history(hist)
 print("Current working directory:", os.getcwd())
+print("Contents of the directory:")
+for item in os.listdir(current_dir):
+    item_path = os.path.join(current_dir, item)
+    if os.path.isdir(item_path):
+        print(f"{item}/ (Directory)")
+    elif os.path.isfile(item_path):
+        print(f"{item} (File)")
+    else:
+        print(f"{item} (Other)")
 model_storage_dir = "src/saved_model"
 save_model(model, model_storage_dir)
 
