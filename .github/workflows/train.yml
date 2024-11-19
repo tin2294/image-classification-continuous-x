@@ -74,6 +74,11 @@ jobs:
           echo "Listing files in the current directory:"
           ls -al
 
+      - name: Print GitHub Workspace
+        run: |
+          echo "GitHub Workspace: $GITHUB_WORKSPACE"
+          ls -al $GITHUB_WORKSPACE
+
       - name: Display Evaluation Results
         run: |
           cat workspace/src/evaluation_metrics.txt || echo "workspace/src/evaluation_metrics.txt not found"
@@ -81,6 +86,7 @@ jobs:
           cat src/evaluation_metrics.txt || echo "src/evaluation_metrics.txt not found"
           cat workspace/evaluation_metrics.txt || echo "workspace/evaluation_metrics.txt not found"
           cat evaluation_metrics.txt || echo "evaluation_metrics.txt not found"
+          cat $GITHUB_WORKSPACE/evaluation_metrics.txt || echo "$GITHUB_WORKSPACE/evaluation_metrics.txt not found"
 
       # - name: Parse Evaluation Metrics
       #   id: metrics
