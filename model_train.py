@@ -114,10 +114,19 @@ for item in os.listdir(current_dir):
         print(f"{item} (File)")
     else:
         print(f"{item} (Other)")
-model_storage_dir = "src/saved_model"
+model_storage_dir = "workspace/src/saved_model"
 save_model(model, model_storage_dir)
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
+print("Contents of the directory:")
+for item in os.listdir(current_dir):
+    item_path = os.path.join(current_dir, item)
+    if os.path.isdir(item_path):
+        print(f"{item}/ (Directory)")
+    elif os.path.isfile(item_path):
+        print(f"{item} (File)")
+    else:
+        print(f"{item} (Other)")
 print(f"Evaluation Loss: {evaluation_loss}", os.getcwd())
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
