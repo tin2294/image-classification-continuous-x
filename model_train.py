@@ -145,7 +145,7 @@ for item in os.listdir(child_dir_path):
     else:
         print(f"{item} (Other)")
 
-gchild_directory = "workspace"
+gchild_directory = "src"
 
 # Get the absolute path of the child directory
 gchild_dir_path = os.path.join(child_dir_path, gchild_directory)
