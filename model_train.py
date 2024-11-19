@@ -165,12 +165,13 @@ for item in os.listdir(gchild_dir_path):
 print(f"Evaluation Loss: {evaluation_loss}", os.getcwd())
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
-root_directory = "/home/cc/actions-runner/_work/image-classification-continuous-x/image-classification-continuous-x"
+file_path = "/home/cc/actions-runner/_work/image-classification-continuous-x/image-classification-continuous-x/evaluation_metrics.txt"
 
-file_path = os.path.join(root_directory, "evaluation_metrics.txt")
+directory_path = os.path.dirname(file_path)
+os.makedirs(directory_path, exist_ok=True)
 
 with open(file_path, "w") as f:
     f.write(f"evaluation_accuracy: {evaluation_accuracy}\n")
     f.write(f"evaluation_loss: {evaluation_loss}\n")
 
-print(f"Evaluation metrics written to {file_path}")
+print(f"Evaluation metrics written to: {file_path}")
