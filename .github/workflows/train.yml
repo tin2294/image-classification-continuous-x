@@ -64,13 +64,23 @@ jobs:
         run: |
           docker stop tensorflow_container
 
+      - name: Print Current Working Directory
+        run: |
+          echo "Current working directory:"
+          pwd
+
+      - name: List Files in Current Directory
+        run: |
+          echo "Listing files in the current directory:"
+          ls -al
+
       - name: Display Evaluation Results
         run: |
-          cat workspace/src/evaluation_metrics.txt || echo "Evaluation metrics not available"
-          cat workspace/workspace/src/evaluation_metrics.txt || echo "Evaluation metrics not available"
-          cat src/evaluation_metrics.txt || echo "Evaluation metrics not available"
-          cat workspace/evaluation_metrics.txt || echo "Evaluation metrics not available"
-          cat evaluation_metrics.txt || echo "Evaluation metrics not available"
+          cat workspace/src/evaluation_metrics.txt || echo "workspace/src/evaluation_metrics.txt not found"
+          cat workspace/workspace/src/evaluation_metrics.txt || echo "workspace/workspace/src/evaluation_metrics.txt not found"
+          cat src/evaluation_metrics.txt || echo "src/evaluation_metrics.txt not found"
+          cat workspace/evaluation_metrics.txt || echo "workspace/evaluation_metrics.txt not found"
+          cat evaluation_metrics.txt || echo "evaluation_metrics.txt not found"
 
       # - name: Parse Evaluation Metrics
       #   id: metrics

@@ -145,6 +145,23 @@ for item in os.listdir(child_dir_path):
     else:
         print(f"{item} (Other)")
 
+gchild_directory = "workspace"
+
+# Get the absolute path of the child directory
+gchild_dir_path = os.path.join(child_dir_path, gchild_directory)
+
+print("Child directory path:", gchild_dir_path)
+
+print("Contents of the grandchild directory:")
+for item in os.listdir(gchild_dir_path):
+    item_path = os.path.join(gchild_dir_path, item)
+    if os.path.isdir(item_path):
+        print(f"{item}/ (Directory)")
+    elif os.path.isfile(item_path):
+        print(f"{item} (File)")
+    else:
+        print(f"{item} (Other)")
+
 print(f"Evaluation Loss: {evaluation_loss}", os.getcwd())
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
