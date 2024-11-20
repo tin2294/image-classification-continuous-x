@@ -185,7 +185,6 @@ def save_model(model, base_dir, accuracy, loss):
     print(f"Model uploaded: {result}")
 
     result["extra"] = metadata
-    print(result, "result with metadata")
 
     models = model_store.list_versions("image-classification")
 

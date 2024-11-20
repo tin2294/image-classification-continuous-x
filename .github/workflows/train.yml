@@ -59,6 +59,7 @@ jobs:
       - name: Run Training Script
         run: |
           docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
+          cat accuracy.txt
         env:
           STORAGE_PATH: /home/cc/models
 
@@ -66,15 +67,22 @@ jobs:
         run: |
           docker stop tensorflow_container
 
-      # - name: Display Evaluation Accuracy
+      # - name: Evaluate and Redeploy
+      #   if: success()
       #   run: |
-      #     echo "Evaluation Accuracy is: ${{ steps.metrics.outputs.evaluation_accuracy }}"
+      #     echo "Checking evaluation accuracy..."
+      #     # Placeholder for actual accuracy retrieval logic
+      #     ACCURACY=$(docker exec tensorflow_container python workspace/src/image-classification-continuous-x/get_accuracy.py)
+      #     echo "Model accuracy: $ACCURACY"
 
-      # - name: Redeploy if Accuracy Meets Threshold
-      # # made it 0.2 for now to check workflow
-      #   if: steps.metrics.outputs.evaluation_accuracy && steps.metrics.outputs.evaluation_accuracy >= 0.15
-      #   run: |
-      #     git config --local user.email "tin2294@gmail.com"
-      #     git config --local user.name "Ting Ting"
-      #     git tag -fa "redeploy" -m "Auto-redeploy from training workflow"
-      #     git push origin redeploy
+      #     THRESHOLD=0.15
+      #     if (( $(echo "$ACCURACY >= $THRESHOLD" | bc -l) )); then
+      #       echo "Accuracy ($ACCURACY) meets or exceeds threshold ($THRESHOLD). Triggering redeployment."
+
+      #       git config --local user.email "tin2294@gmail.com"
+      #       git config --local user.name "Ting Ting"
+      #       git tag -fa "redeploy" -m "Auto-redeploy from training workflow"
+      #       git push origin redeploy
+      #     else
+      #       echo "Accuracy ($ACCURACY) does not meet threshold ($THRESHOLD). Skipping redeployment."
+      #     fi

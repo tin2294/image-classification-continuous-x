@@ -6,7 +6,6 @@ from utils import (
     plot_sample_images,
     prepare_data_generators,
     build_model,
-    # build_transfer_model,
     reorganize_files,
     plot_training_history,
     save_model
@@ -50,8 +49,6 @@ print(f"Validation generator has {validation_gen.samples} samples.")
 
 # Build and train model
 model = build_model(INPUT_IMG_SIZE, len(CLASSES))
-# model = build_transfer_model(INPUT_IMG_SIZE, len(CLASSES))
-
 
 # Calculate number of steps
 num_training_samples = training_gen.samples
@@ -64,8 +61,6 @@ n_epochs = 3
 steps_per_epoch = num_training_samples // BATCH_SIZE
 validation_steps = num_validation_samples // BATCH_SIZE
 
-# early_stop = EarlyStopping(monitor='val_accuracy', patience=3, restore_best_weights=True)
-
 # Fit the model
 hist = model.fit(
     training_gen,
@@ -75,46 +70,12 @@ hist = model.fit(
     validation_steps=validation_steps
 )
 
-# hist = model.fit(
-#     training_gen,
-#     steps_per_epoch=steps_per_epoch,
-#     epochs=n_epochs,
-#     shuffle=True,
-#     validation_data=validation_gen,
-#     validation_steps=validation_steps,
-#     callbacks=[early_stop]
-# )
-
-# model.trainable = True
-# for layer in model.layers[:-4]:
-#     layer.trainable = False
-
 model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.00005),
               loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
-# hist_fine = model.fit(
-#     training_gen,
-#     steps_per_epoch=steps_per_epoch,
-#     epochs=n_epochs_fine,
-#     shuffle=True,
-#     validation_data=validation_gen,
-#     validation_steps=validation_steps,
-#     callbacks=[early_stop]
-# )
-
 plot_training_history(hist)
-current_dir = os.getcwd()
-print("Current working directory:", current_dir)
-print("Contents of the directory:")
-for item in os.listdir(current_dir):
-    item_path = os.path.join(current_dir, item)
-    if os.path.isdir(item_path):
-        print(f"{item}/ (Directory)")
-    elif os.path.isfile(item_path):
-        print(f"{item} (File)")
-    else:
-        print(f"{item} (Other)")
+
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 
 model_storage_dir = "./models"
@@ -131,5 +92,8 @@ os.makedirs(directory_path, exist_ok=True)
 with open(file_path, "w") as f:
     f.write(f"evaluation_accuracy: {evaluation_accuracy}\n")
     f.write(f"evaluation_loss: {evaluation_loss}\n")
+
+with open("accuracy.txt", "w") as f:
+    f.write(str(evaluation_accuracy))
 
 print(f"Evaluation metrics written to: {file_path}")
