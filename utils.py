@@ -234,4 +234,16 @@ def save_model(model, base_dir, accuracy, loss):
         metadata=metadata
     )
 
-    print(f"Model uploaded to Modelstore with ID: {result['model_id']}")
+    print(f"Model uploaded: {result}")
+
+    # trying to retrieve latest model
+    models = model_store.list(domain="image-classification")
+    models_sorted = sorted(models, key=lambda x: int(x['name'].split('_v')[-1].split('.keras')[0]), reverse=True)
+    latest_model = models_sorted[0]
+    latest_model_id = latest_model['model_id']
+    model_local_path = latest_model['model_path']
+
+    loaded_model = load_model(model_local_path)
+
+    print(f"Latest model ID: {latest_model['model_id']}")
+    print(f"Metadata (accuracy, loss, etc.): {latest_model['metadata']}")
