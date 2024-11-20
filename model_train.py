@@ -93,7 +93,7 @@ with open(file_path, "w") as f:
     f.write(f"evaluation_accuracy: {evaluation_accuracy}\n")
     f.write(f"evaluation_loss: {evaluation_loss}\n")
 
-with open("accuracy.txt", "w") as f:
-    f.write(str(evaluation_accuracy))
+with open(os.environ['GITHUB_ENV'], 'a') as env_file:
+    env_file.write(f"ACCURACY={evaluation_accuracy}\n")
 
 print(f"Evaluation metrics written to: {file_path}")

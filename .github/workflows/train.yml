@@ -59,9 +59,13 @@ jobs:
       - name: Run Training Script
         run: |
           docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
-          cat accuracy.txt
         env:
           STORAGE_PATH: /home/cc/models
+
+      - name: Print env variables
+        run: |
+          echo "Printing environment variables:"
+          printenv
 
       - name: Stop Container
         run: |
