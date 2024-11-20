@@ -66,43 +66,6 @@ jobs:
         run: |
           docker stop tensorflow_container
 
-      - name: Print Current Working Directory
-        run: |
-          echo "Current working directory:"
-          pwd
-
-      - name: List Files in Current Directory
-        run: |
-          echo "Listing files in the current directory:"
-          ls -al
-
-      - name: Print GitHub Workspace
-        run: |
-          echo "GitHub Workspace: $GITHUB_WORKSPACE"
-          ls -al $GITHUB_WORKSPACE
-
-      - name: Display Evaluation Results
-        run: |
-          cat workspace/src/evaluation_metrics.txt || echo "workspace/src/evaluation_metrics.txt not found"
-          cat workspace/workspace/src/evaluation_metrics.txt || echo "workspace/workspace/src/evaluation_metrics.txt not found"
-          cat src/evaluation_metrics.txt || echo "src/evaluation_metrics.txt not found"
-          cat workspace/evaluation_metrics.txt || echo "workspace/evaluation_metrics.txt not found"
-          cat evaluation_metrics.txt || echo "evaluation_metrics.txt not found"
-          cat $GITHUB_WORKSPACE/evaluation_metrics.txt || echo "$GITHUB_WORKSPACE/evaluation_metrics.txt not found"
-
-      - name: Display Evaluation Results
-        run: |
-          echo "Listing contents of workspace/src:"
-          ls -al workspace/src || echo "Directory not found"
-      
-          echo "Attempting to display evaluation metrics:"
-          cat workspace/src/evaluation_metrics.txt || echo "File not found"
-
-      - name: List All Files
-        run: |
-          echo "Listing all files and directories:"
-          find . -type f
-
       # - name: Parse Evaluation Metrics
       #   id: metrics
       #   run: |
