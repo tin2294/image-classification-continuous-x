@@ -59,6 +59,8 @@ jobs:
       - name: Run Training Script
         run: |
           docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
+        env:
+          STORAGE_PATH: /home/cc/models
 
       - name: Stop Container
         run: |

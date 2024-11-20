@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 import shutil
 import keras
 import time
+import modelstore
+from modelstore.models import keras
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
@@ -104,72 +106,72 @@ def prepare_data_generators(training_dir, validation_dir, evaluation_dir, input_
 
     return training_gen, validation_gen, evaluation_gen
 
+def build_model(input_size, num_classes):
+    """
+    Build a simple CNN model for image classification.
+    """
+    model = tf.keras.Sequential([
+        tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dense(128, activation='relu'),
+        tf.keras.layers.Dense(num_classes, activation='softmax')
+    ])
+    
+    model.compile(optimizer='adam',
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['accuracy'])
+    
+    return model
+
+
 # def build_model(input_size, num_classes):
-#     """
-#     Build a simple CNN model for image classification.
-#     """
 #     model = tf.keras.Sequential([
-#         tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
+#         tf.keras.layers.Conv2D(64, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
+#         tf.keras.layers.BatchNormalization(),
 #         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-#         tf.keras.layers.Conv2D(64, (3, 3), activation='relu'),
+
+#         tf.keras.layers.Conv2D(128, (3, 3), activation='relu'),
+#         tf.keras.layers.BatchNormalization(),
 #         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
+#         tf.keras.layers.Conv2D(256, (3, 3), activation='relu'),
+#         tf.keras.layers.BatchNormalization(),
+#         tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+
 #         tf.keras.layers.Flatten(),
-#         tf.keras.layers.Dense(128, activation='relu'),
+#         tf.keras.layers.Dense(512, activation='relu'),
+#         tf.keras.layers.Dropout(0.5),
+
 #         tf.keras.layers.Dense(num_classes, activation='softmax')
 #     ])
-    
-#     model.compile(optimizer='adam',
+
+#     model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
 #                   loss='sparse_categorical_crossentropy',
 #                   metrics=['accuracy'])
-    
 #     return model
 
+# def build_transfer_model(input_img_size, num_classes):
+    # base_model = tf.keras.applications.EfficientNetB0(
+    #     input_shape=(input_img_size, input_img_size, 3),
+    #     include_top=False,
+    #     pooling='avg'
+    # )
+    # base_model.trainable = False
 
-def build_model(input_size, num_classes):
-    model = tf.keras.Sequential([
-        tf.keras.layers.Conv2D(64, (3, 3), activation='relu', input_shape=(input_size, input_size, 3)),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
+    # model = tf.keras.models.Sequential([
+    #     base_model,
+    #     tf.keras.layers.Dense(256, activation='relu'),
+    #     tf.keras.layers.Dropout(0.5),
+    #     tf.keras.layers.Dense(num_classes, activation='softmax')
+    # ])
 
-        tf.keras.layers.Conv2D(128, (3, 3), activation='relu'),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-
-        tf.keras.layers.Conv2D(256, (3, 3), activation='relu'),
-        tf.keras.layers.BatchNormalization(),
-        tf.keras.layers.MaxPooling2D(pool_size=(2, 2)),
-
-        tf.keras.layers.Flatten(),
-        tf.keras.layers.Dense(512, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
-
-        tf.keras.layers.Dense(num_classes, activation='softmax')
-    ])
-
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['accuracy'])
-    return model
-
-def build_transfer_model(input_img_size, num_classes):
-    base_model = tf.keras.applications.EfficientNetB0(
-        input_shape=(input_img_size, input_img_size, 3),
-        include_top=False,
-        pooling='avg'
-    )
-    base_model.trainable = False
-
-    model = tf.keras.models.Sequential([
-        base_model,
-        tf.keras.layers.Dense(256, activation='relu'),
-        tf.keras.layers.Dropout(0.5),
-        tf.keras.layers.Dense(num_classes, activation='softmax')
-    ])
-
-    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['accuracy'])
-    return model
+    # model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
+    #               loss='sparse_categorical_crossentropy',
+    #               metrics=['accuracy'])
+    # return model
 
 def plot_training_history(hist, filename='training_history.png'):
     """
@@ -204,13 +206,30 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.savefig(filename)
     plt.close()
 
-def save_model(model, base_dir):
-    """Save the trained model to the specified filepath."""
+storage_path = "/home/cc/models"
+model_store = modelstore.ModelStore(f"local://{storage_path}")
+
+def save_model(model, base_dir, accuracy, loss):
+    # Create directory if it doesn't exist
     os.makedirs(base_dir, exist_ok=True)
 
+    # Generate a timestamp-based versioned model name
     timestamp = int(time.time())
-    versioned_model_name = f"model_v{timestamp}.h5"
-    model_save_path = os.path.join(base_dir, versioned_model_name)
+    versioned_model_name = f"model_v{timestamp}.keras"
+    model_path = os.path.join(base_dir, versioned_model_name)
 
-    model.save(model_save_path)
-    print(f"Model saved to {model_save_path}")
+    # Save the model in Keras format
+    model.save(model_path, save_format="keras")
+    print(f"Model saved in Keras format at {model_path}")
+
+    # Prepare metadata
+    metadata = {"accuracy": accuracy, "loss": loss}
+
+    # Upload the model and metadata to Modelstore
+    result = modelstore.upload(
+        domain="image-classification",
+        model=model_path,
+        metadata=metadata
+    )
+
+    print(f"Model uploaded to Modelstore with ID: {result['model_id']}")
