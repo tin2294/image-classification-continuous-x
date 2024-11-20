@@ -8,6 +8,7 @@ import keras
 import time
 from modelstore import ModelStore
 from modelstore.storage.local import FileSystemStorage
+from tensorflow.keras.models import load_model
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
@@ -244,11 +245,16 @@ def save_model(model, base_dir, accuracy, loss):
         latest_model_id = models[0]
         print(f"Using the latest model with ID: {latest_model_id}")
 
-        model_metadata = model_store.load("image-classification", latest_model_id)
+        model_file_path = model_store.download(domain="image-classification", model_id=latest_model_id)
+        print(f"Model downloaded to: {model_file_path}")
         # metadata = model_metadata['metadata']
         # loss = model_metadata['metadata']['loss']
 
+        model = load_model(model_file_path)
         print(model_metadata)
+
+        model_metadata = model_store.get_metadata(domain="image-classification", model_id=latest_model_id)
+        print(f"Model Metadata: {model_metadata}")
         # print(f"Metadata: {metadata}")
         # print(f"Loss: {loss}")
     else:
