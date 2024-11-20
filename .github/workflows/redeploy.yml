@@ -13,7 +13,7 @@ on:
 
 jobs:
   redeploy:
-    runs-on: [self-hosted, node-0]
+    runs-on: node-0
     name: Redeploy ML App
 
     steps:
