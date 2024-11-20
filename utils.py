@@ -228,7 +228,7 @@ def save_model(model, base_dir, accuracy, loss):
     metadata = {"accuracy": accuracy, "loss": loss}
 
     # Upload the model and metadata to Modelstore
-    result = modelstore.upload(
+    result = ModelStore.upload(
         domain="image-classification",
         model=model_path,
         metadata=metadata

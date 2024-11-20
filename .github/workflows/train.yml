@@ -66,13 +66,6 @@ jobs:
         run: |
           docker stop tensorflow_container
 
-      # - name: Parse Evaluation Metrics
-      #   id: metrics
-      #   run: |
-      #     evaluation_accuracy=$(grep 'evaluation_accuracy' evaluation_metrics.txt | cut -d' ' -f2)
-      #     echo "::set-output name=evaluation_accuracy::$evaluation_accuracy"
-      #   continue-on-error: true
-
       # - name: Display Evaluation Accuracy
       #   run: |
       #     echo "Evaluation Accuracy is: ${{ steps.metrics.outputs.evaluation_accuracy }}"
