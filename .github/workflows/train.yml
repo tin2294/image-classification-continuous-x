@@ -58,7 +58,7 @@ jobs:
 
       - name: Get Accuracy and Set Environment Variable
         run: |
-          accuracy=$(docker exec tensorflow_container python -c "import workspace.src.image_classification_continuous_x.model_train as train; print(train.get_accuracy())")
+          accuracy=$(docker exec -w /workspace tensorflow_container python -c "from src.image_classification_continuous_x.model_train import get_accuracy; print(get_accuracy())")
           echo "ACCURACY=$accuracy" >> $GITHUB_ENV
 
       - name: Print env variables
