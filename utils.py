@@ -259,11 +259,9 @@ def save_model(model, base_dir, accuracy, loss):
         full_model_path = os.path.join(model_file_path, versioned_model_name)
 
         print(full_model_path)
-        # model_metadata = model_store.get_metadata(domain="image-classification", model_id=latest_model_id)
-        # print(f"Model Metadata: {model_metadata}")
-        # model = load_model(model_file_path)
+
         try:
-            model = load_model(model_file_path)
+            model = load_model(full_model_path)
             print("Model loaded successfully.")
         except Exception as e:
             print(f"Error loading model: {e}")
