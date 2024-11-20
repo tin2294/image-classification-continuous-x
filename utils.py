@@ -238,13 +238,16 @@ def save_model(model, base_dir, accuracy, loss):
 
     # trying to retrieve latest model
     models = model_store.list_versions("image-classification")
-    print(models)
-    # models_sorted = sorted(models, key=lambda x: int(x['name'].split('_v')[-1].split('.keras')[0]), reverse=True)
-    # latest_model = models_sorted[0]
-    # latest_model_id = latest_model['model_id']
-    # model_local_path = latest_model['model_path']
 
-    # loaded_model = load_model(model_local_path)
+    if len(model_versions) > 0:
+        latest_model_id = model_versions[0]
+        print(f"Using the latest model with ID: {latest_model_id}")
 
-    # print(f"Latest model ID: {latest_model['model_id']}")
-    # print(f"Metadata (accuracy, loss, etc.): {latest_model['metadata']}")
+        model_metadata = model_store.get(model_id=latest_model_id)
+        metadata = model_metadata['metadata']
+        # loss = model_metadata['metadata']['loss']
+
+        print(f"Metadata: {metadata}")
+        # print(f"Loss: {loss}")
+    else:
+        print("No models found.")
