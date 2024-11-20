@@ -256,12 +256,9 @@ def save_model(model, base_dir, accuracy, loss):
 
         print(f"Model downloaded to: {model_file_path}")
 
-        if os.path.isdir(model_file_path):
-            files = os.listdir(model_file_path)
-            print("Contents of the model directory:")
-            for file in files:
-                print(file)
+        full_model_path = os.path.join(model_file_path, versioned_model_name)
 
+        print(full_model_path)
         # model_metadata = model_store.get_metadata(domain="image-classification", model_id=latest_model_id)
         # print(f"Model Metadata: {model_metadata}")
         # model = load_model(model_file_path)
