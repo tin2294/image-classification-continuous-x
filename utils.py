@@ -159,12 +159,12 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.savefig(filename)
     plt.close()
 
-storage_path = "/home/cc/models"
-os.makedirs(storage_path, exist_ok=True)
-file_system_storage = FileSystemStorage(storage_path)
-model_store = ModelStore(storage=file_system_storage)
 
 def save_model(model, base_dir, accuracy, loss):
+    storage_path = "/tmp/temp_models/"
+    os.makedirs(storage_path, exist_ok=True)
+    file_system_storage = FileSystemStorage(storage_path)
+    model_store = ModelStore(storage=file_system_storage)
     os.makedirs(base_dir, exist_ok=True)
 
     timestamp = int(time.time())

@@ -70,10 +70,6 @@ hist = model.fit(
     validation_steps=validation_steps
 )
 
-model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=0.00005),
-              loss='sparse_categorical_crossentropy',
-              metrics=['accuracy'])
-
 plot_training_history(hist)
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
