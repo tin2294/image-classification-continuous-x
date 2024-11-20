@@ -240,7 +240,7 @@ def save_model(model, base_dir, accuracy, loss):
     models = model_store.list_versions("image-classification")
 
     if len(models) > 0:
-        latest_model_id = model_versions[0]
+        latest_model_id = models[0]
         print(f"Using the latest model with ID: {latest_model_id}")
 
         model_metadata = model_store.get(model_id=latest_model_id)
