@@ -256,8 +256,8 @@ def save_model(model, base_dir, accuracy, loss):
 
         print(f"Model downloaded to: {model_file_path}")
 
-        model_metadata = model_store.get_metadata(domain="image-classification", model_id=latest_model_id)
-        print(f"Model Metadata: {model_metadata}")
+        # model_metadata = model_store.get_metadata(domain="image-classification", model_id=latest_model_id)
+        # print(f"Model Metadata: {model_metadata}")
         # model = load_model(model_file_path)
         try:
             model = load_model(model_file_path)
