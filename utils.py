@@ -184,8 +184,10 @@ def save_model(model, base_dir, accuracy, loss):
 
     print(f"Model uploaded: {result}")
 
+    result["extra"] = metadata
+    print(result, "result with metadata")
+
     models = model_store.list_versions("image-classification")
-    print(models)
 
     if len(models) > 0:
         latest_model_id = models[0]
@@ -203,8 +205,6 @@ def save_model(model, base_dir, accuracy, loss):
         print(f"Model downloaded to: {model_file_path}")
 
         full_model_path = os.path.join(model_file_path, versioned_model_name)
-
-        print(full_model_path)
 
         try:
             model = load_model(full_model_path)
