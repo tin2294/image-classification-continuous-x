@@ -239,7 +239,7 @@ def save_model(model, base_dir, accuracy, loss):
     # trying to retrieve latest model
     models = model_store.list_versions("image-classification")
 
-    if len(model_versions) > 0:
+    if len(models) > 0:
         latest_model_id = model_versions[0]
         print(f"Using the latest model with ID: {latest_model_id}")
 

@@ -180,7 +180,3 @@ print(f"Evaluation metrics written to: {file_path}")
 
 print("Current working directory:", os.getcwd())
 print("List of files in current directory:", os.listdir("."))
-print("Absolute path of the target file:", os.path.abspath(file_path))
-host_path = "/home/cc/actions-runner/_work/image-classification-continuous-x/image-classification-continuous-x/evaluation_metrics.txt"
-shutil.copy(file_path, host_path)
-print(f"File copied to host: {host_path}")
