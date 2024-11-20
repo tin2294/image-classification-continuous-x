@@ -7,6 +7,7 @@ import shutil
 import keras
 import time
 from modelstore import ModelStore
+from modelstore.storage.local import FileSystemStorage
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
@@ -206,7 +207,9 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.close()
 
 storage_path = "/home/cc/models"
-model_store = ModelStore.from_file_system(root_directory=storage_path)
+os.makedirs(storage_path, exist_ok=True)
+file_system_storage = FileSystemStorage(root_directory=storage_path)
+model_store = ModelStore(storage=file_system_storage)
 
 def save_model(model, base_dir, accuracy, loss):
     # Create directory if it doesn't exist
