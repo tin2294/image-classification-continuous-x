@@ -6,7 +6,7 @@ from utils import (
     plot_sample_images,
     prepare_data_generators,
     build_model,
-    build_transfer_model,
+    # build_transfer_model,
     reorganize_files,
     plot_training_history,
     save_model
