@@ -20,7 +20,7 @@ jobs:
         run: |
           docker run -d --rm --name tensorflow_container \
             -v food11_data:/tmp/content/Food-11 \
-            -v /home/cc/test:/tmp/temp_models \
+            -v saved_models:/tmp/temp_models \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
@@ -72,13 +72,13 @@ jobs:
       #     accuracy=$(docker exec -w /workspace/src tensorflow_container python -c "from image_classification_continuous_x.model_train import get_accuracy; print(get_accuracy())")
       #     echo "ACCURACY=$accuracy" >> $GITHUB_ENV
 
+      - name: Open empty.txt test
+        run: |
+          docker exec tensorflow_container cat /tmp/temp_models/empty.txt
+
       - name: Stop Container
         run: |
           docker stop tensorflow_container
-
-      - name: Debug GITHUB_ENV
-        run: |
-          cat $GITHUB_ENV
 
   redeploy:
     runs-on: node-0
