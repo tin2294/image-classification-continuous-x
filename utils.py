@@ -208,7 +208,7 @@ def plot_training_history(hist, filename='training_history.png'):
 
 storage_path = "/home/cc/models"
 os.makedirs(storage_path, exist_ok=True)
-file_system_storage = FileSystemStorage(root_directory=storage_path)
+file_system_storage = FileSystemStorage(directory=storage_path)
 model_store = ModelStore(storage=file_system_storage)
 
 def save_model(model, base_dir, accuracy, loss):
