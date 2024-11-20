@@ -97,3 +97,8 @@ with open(os.environ['GITHUB_ENV'], 'a') as env_file:
     env_file.write(f"ACCURACY={evaluation_accuracy}\n")
 
 print(f"Evaluation metrics written to: {file_path}")
+
+EVAL_ACC = evaluation_accuracy
+
+def get_accuracy():
+    return EVAL_ACC

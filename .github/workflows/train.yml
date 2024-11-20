@@ -71,6 +71,15 @@ jobs:
         run: |
           docker stop tensorflow_container
 
+      - name: Set Accuracy as Environment Variable
+        run: |
+          accuracy=$(python -c "import workspace.src.image_classification_continuous_x.model_train as train; print(train.get_accuracy())")
+          echo "ACCURACY=$accuracy" >> $GITHUB_ENV
+
+      - name: Debug GITHUB_ENV
+        run: |
+          cat $GITHUB_ENV
+
       # - name: Evaluate and Redeploy
       #   if: success()
       #   run: |
