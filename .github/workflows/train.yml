@@ -66,15 +66,15 @@ jobs:
         env:
           STORAGE_PATH: /home/cc/models
 
-      # ADD LATER TO CHECK ACCURACY
-      # - name: Set Accuracy as Environment Variable
-      #   run: |
-      #     accuracy=$(docker exec -w /workspace/src tensorflow_container python -c "from image_classification_continuous_x.model_train import get_accuracy; print(get_accuracy())")
-      #     echo "ACCURACY=$accuracy" >> $GITHUB_ENV
-
       - name: Open empty.txt test
         run: |
-          docker exec tensorflow_container cat /tmp/temp_models/empty.txt
+          docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt
+
+      - name: Set Accuracy as Environment Variable
+        run: |
+          EVALUATION_ACCURACY=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_accuracy" | cut -d' ' -f2)
+          echo "Extracted evaluation_accuracy: $EVALUATION_ACCURACY"
+          echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
 
       - name: Stop Container
         run: |
