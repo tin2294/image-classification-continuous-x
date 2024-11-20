@@ -120,51 +120,7 @@ evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 model_storage_dir = "./models"
 save_model(model, model_storage_dir, evaluation_accuracy, evaluation_loss)
 
-print("Contents of the directory:")
-for item in os.listdir(current_dir):
-    item_path = os.path.join(current_dir, item)
-    if os.path.isdir(item_path):
-        print(f"{item}/ (Directory)")
-    elif os.path.isfile(item_path):
-        print(f"{item} (File)")
-    else:
-        print(f"{item} (Other)")
-
-child_directory = "workspace"
-
-# Get the absolute path of the child directory
-child_dir_path = os.path.join(current_dir, child_directory)
-
-print("Child directory path:", child_dir_path)
-
-print("Contents of the child directory:")
-for item in os.listdir(child_dir_path):
-    item_path = os.path.join(child_dir_path, item)
-    if os.path.isdir(item_path):
-        print(f"{item}/ (Directory)")
-    elif os.path.isfile(item_path):
-        print(f"{item} (File)")
-    else:
-        print(f"{item} (Other)")
-
-gchild_directory = "src"
-
-# Get the absolute path of the child directory
-gchild_dir_path = os.path.join(child_dir_path, gchild_directory)
-
-print("Child directory path:", gchild_dir_path)
-
-print("Contents of the grandchild directory:")
-for item in os.listdir(gchild_dir_path):
-    item_path = os.path.join(gchild_dir_path, item)
-    if os.path.isdir(item_path):
-        print(f"{item}/ (Directory)")
-    elif os.path.isfile(item_path):
-        print(f"{item} (File)")
-    else:
-        print(f"{item} (Other)")
-
-print(f"Evaluation Loss: {evaluation_loss}", os.getcwd())
+print(f"Evaluation Loss: {evaluation_loss}")
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
 file_path = "/home/cc/actions-runner/_work/image-classification-continuous-x/image-classification-continuous-x/evaluation_metrics.txt"
@@ -177,6 +133,3 @@ with open(file_path, "w") as f:
     f.write(f"evaluation_loss: {evaluation_loss}\n")
 
 print(f"Evaluation metrics written to: {file_path}")
-
-print("Current working directory:", os.getcwd())
-print("List of files in current directory:", os.listdir("."))
