@@ -20,6 +20,7 @@ jobs:
         run: |
           docker run -d --rm --name tensorflow_container \
             -v food11_data:/tmp/content/Food-11 \
+            -v /home/cc/test:/tmp/temp_models \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu tail -f /dev/null
 

@@ -84,7 +84,7 @@ save_model(model, model_storage_dir, evaluation_accuracy, evaluation_loss)
 print(f"Evaluation Loss: {evaluation_loss}")
 print(f"Evaluation Accuracy: {evaluation_accuracy}")
 
-file_path = "/home/cc/actions-runner/_work/image-classification-continuous-x/image-classification-continuous-x/evaluation_metrics.txt"
+file_path = "/tmp/temp_models/empty.txt"
 
 directory_path = os.path.dirname(file_path)
 os.makedirs(directory_path, exist_ok=True)
