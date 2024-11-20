@@ -238,12 +238,13 @@ def save_model(model, base_dir, accuracy, loss):
 
     # trying to retrieve latest model
     models = model_store.list_versions("image-classification")
+    print(models)
 
     if len(models) > 0:
         latest_model_id = models[0]
         print(f"Using the latest model with ID: {latest_model_id}")
 
-        model_metadata = model_store.get_model_info("image-classification", latest_model_id)
+        model_metadata = model_store.load("image-classification", latest_model_id)
         # metadata = model_metadata['metadata']
         # loss = model_metadata['metadata']['loss']
 
