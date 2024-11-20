@@ -7,7 +7,6 @@ import shutil
 import keras
 import time
 import modelstore
-from modelstore.models import keras
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
