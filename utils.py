@@ -245,13 +245,18 @@ def save_model(model, base_dir, accuracy, loss):
         latest_model_id = models[0]
         print(f"Using the latest model with ID: {latest_model_id}")
 
-        model_file_path = model_store.download(domain="image-classification", model_id=latest_model_id)
+        local_download_dir = "/home/cc/models/downloaded_model"
+        os.makedirs(local_download_dir, exist_ok=True)
+
+        model_file_path = model_store.download(
+            domain="image-classification",
+            model_id=latest_model_id,
+            local_path=local_download_dir
+        )
+
         print(f"Model downloaded to: {model_file_path}")
-        # metadata = model_metadata['metadata']
-        # loss = model_metadata['metadata']['loss']
 
         model = load_model(model_file_path)
-        print(model_metadata)
 
         model_metadata = model_store.get_metadata(domain="image-classification", model_id=latest_model_id)
         print(f"Model Metadata: {model_metadata}")
