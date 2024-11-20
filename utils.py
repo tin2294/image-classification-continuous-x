@@ -206,7 +206,7 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.close()
 
 storage_path = "/home/cc/models"
-model_store = ModelStore(f"local://{storage_path}")
+model_store = ModelStore.from_file_system(root_directory=f"local://{storage_path}")
 
 def save_model(model, base_dir, accuracy, loss):
     # Create directory if it doesn't exist
