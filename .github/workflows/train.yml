@@ -60,15 +60,8 @@ jobs:
       - name: Run Training Script
         run: |
           docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
-          ACCURACY=0.3119211196899414
-          echo "Model accuracy: $ACCURACY"
-          echo "accuracy=$ACCURACY" >> $GITHUB_ENV
         env:
           STORAGE_PATH: /home/cc/models
-
-      - name: Open empty.txt test
-        run: |
-          docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt
 
       - name: Set Accuracy as Environment Variable
         run: |
