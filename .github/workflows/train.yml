@@ -56,10 +56,11 @@ jobs:
         run: |
           docker exec tensorflow_container pip install -r workspace/src/image-classification-continuous-x/requirements_docker.txt
 
-      - name: Get Accuracy and Set Environment Variable
+      - name: Run Training Script
         run: |
-          accuracy=$(docker exec -w /workspace tensorflow_container python -c "from src.image_classification_continuous_x.model_train import get_accuracy; print(get_accuracy())")
-          echo "ACCURACY=$accuracy" >> $GITHUB_ENV
+          docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
+        env:
+          STORAGE_PATH: /home/cc/models
 
       - name: Print env variables
         run: |
@@ -72,7 +73,7 @@ jobs:
 
       - name: Set Accuracy as Environment Variable
         run: |
-          accuracy=$(python -c "import workspace.src.image_classification_continuous_x.model_train as train; print(train.get_accuracy())")
+          accuracy=$(docker exec -w /workspace/src tensorflow_container python -c "from image_classification_continuous_x.model_train import get_accuracy; print(get_accuracy())")
           echo "ACCURACY=$accuracy" >> $GITHUB_ENV
 
       - name: Debug GITHUB_ENV
