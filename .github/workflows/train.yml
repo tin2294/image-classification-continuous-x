@@ -68,8 +68,11 @@ jobs:
       - name: Set Accuracy as Environment Variable
         run: |
           EVALUATION_ACCURACY=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_accuracy" | cut -d' ' -f2)
+          EVALUATION_LOSS=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_loss" | cut -d' ' -f2)
           echo "Extracted evaluation_accuracy: $EVALUATION_ACCURACY"
+          echo "Extracted evaluation_loss: $EVALUATION_LOSS"
           echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
+          echo "LOSS=$EVALUATION_LOSS" >> $GITHUB_ENV
 
       - name: Stop Container
         run: |

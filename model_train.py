@@ -4,8 +4,7 @@ from utils import (
     load_training_labels,
     prepare_data_generators,
     build_model,
-    save_model,
-    plot_training_history
+    save_model
 )
 
 BATCH_SIZE = 128
@@ -53,19 +52,14 @@ hist = model.fit(
     validation_steps=validation_steps
 )
 
-plot_training_history(hist)
-
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 
 # Save Model
 model_storage_dir = "./models"
 save_model(model, model_storage_dir, evaluation_accuracy, evaluation_loss)
 
-print(f"Evaluation Loss: {evaluation_loss}")
-print(f"Evaluation Accuracy: {evaluation_accuracy}")
-
+# Create File with Evaluation Metrics
 file_path = "/tmp/temp_models/evaluation_metrics.txt"
-
 directory_path = os.path.dirname(file_path)
 os.makedirs(directory_path, exist_ok=True)
 
@@ -74,8 +68,3 @@ with open(file_path, "w") as f:
     f.write(f"evaluation_loss: {evaluation_loss}\n")
 
 print(f"Evaluation metrics written to: {file_path}")
-
-EVAL_ACC = evaluation_accuracy
-
-def get_accuracy():
-    return EVAL_ACC

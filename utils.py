@@ -160,11 +160,8 @@ def plot_training_history(hist, filename='training_history.png'):
 
 
 def save_model(model, base_dir, accuracy, loss):
-    storage_path = "/tmp/temp_models/"
-    os.makedirs(storage_path, exist_ok=True)
-    file_system_storage = FileSystemStorage(storage_path)
-    model_store = ModelStore(storage=file_system_storage)
-    os.makedirs(base_dir, exist_ok=True)
+    # storage_path = "/tmp/temp_models/"
+    model_store = ModelStore.create_file_system_model_store()
 
     timestamp = int(time.time())
     versioned_model_name = f"model_v{timestamp}.keras"
