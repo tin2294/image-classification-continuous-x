@@ -66,11 +66,6 @@ def create_image_generator(directory, input_size, batch_size):
     """
     Custom data generator for images in a directory with class labels in subdirectory names.
     """
-    print("Creating image generator")
-    print("Path exists:", os.path.exists(directory))
-    print("Absolute path:", os.path.abspath(directory))
-    print(directory)
-    print(os.listdir(directory))
 
     datagen = tf.keras.preprocessing.image.ImageDataGenerator(
         rescale=1.0 / 255,
@@ -162,6 +157,7 @@ def plot_training_history(hist, filename='training_history.png'):
 def save_model(model, base_dir, accuracy, loss):
     storage_path = "/tmp/temp_models/"
     model_store = ModelStore.from_file_system(root_directory=storage_path)
+    os.makedirs(base_dir, exist_ok=True)
 
     timestamp = int(time.time())
     versioned_model_name = f"model_v{timestamp}.keras"
