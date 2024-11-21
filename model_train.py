@@ -4,7 +4,8 @@ from utils import (
     load_training_labels,
     prepare_data_generators,
     build_model,
-    save_model
+    save_model,
+    plot_training_history
 )
 
 BATCH_SIZE = 128
