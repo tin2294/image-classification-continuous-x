@@ -7,7 +7,6 @@ import shutil
 import keras
 import time
 from modelstore import ModelStore
-from modelstore.storage.local import FileSystemStorage
 from tensorflow.keras.models import load_model
 
 def reorganize_files(dataset_path, classes):
@@ -187,10 +186,9 @@ def save_model(model, base_dir, accuracy, loss):
 
 
 def download_latest_model():
-    storage_path = "/tmp/temp_models/"
-    os.makedirs(storage_path, exist_ok=True)
-    file_system_storage = FileSystemStorage(storage_path)
-    model_store = ModelStore(storage=file_system_storage)
+    model_store = ModelStore.create_file_system_model_store()
+    # storage_path = "/tmp/temp_models/"
+    # model_store = ModelStore.from_file_system(root_directory=storage_path)
     models = model_store.list_versions("image-classification")
 
     if len(models) > 0:
