@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import shutil
 import keras
 import time
-from modelstore import ModelStore
+from modelstore import ModelStore, create_file_system_model_store
 from tensorflow.keras.models import load_model
 
 def reorganize_files(dataset_path, classes):
