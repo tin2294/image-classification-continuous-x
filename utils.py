@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import shutil
 import keras
 import time
-from modelstore import ModelStore, create_file_system_model_store
+from modelstore import ModelStore
 from tensorflow.keras.models import load_model
 
 def reorganize_files(dataset_path, classes):
@@ -160,8 +160,8 @@ def plot_training_history(hist, filename='training_history.png'):
 
 
 def save_model(model, base_dir, accuracy, loss):
-    # storage_path = "/tmp/temp_models/"
-    model_store = ModelStore.create_file_system_model_store()
+    storage_path = "/tmp/temp_models/"
+    model_store = ModelStore.from_file_system(root_directory=storage_path)
 
     timestamp = int(time.time())
     versioned_model_name = f"model_v{timestamp}.keras"
@@ -183,9 +183,8 @@ def save_model(model, base_dir, accuracy, loss):
 
 
 def download_latest_model():
-    model_store = ModelStore.create_file_system_model_store()
-    # storage_path = "/tmp/temp_models/"
-    # model_store = ModelStore.from_file_system(root_directory=storage_path)
+    storage_path = "/tmp/temp_models/"
+    model_store = ModelStore.from_file_system(root_directory=storage_path)
     models = model_store.list_versions("image-classification")
 
     if len(models) > 0:

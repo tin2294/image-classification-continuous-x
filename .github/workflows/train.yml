@@ -6,7 +6,7 @@ on:
       - main
     paths:
         - 'model_train.py'
-
+        - 'utils.py'
 jobs:
   train-evaluate:
     runs-on: gpu-p100
