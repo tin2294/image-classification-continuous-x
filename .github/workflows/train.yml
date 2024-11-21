@@ -100,7 +100,7 @@ jobs:
 
       - name: Deploy Model
         run: |
-          python /path/to/deploy_model.py
+          python deploy_model.py
 
       - name: Build and push Docker image
         run: |
