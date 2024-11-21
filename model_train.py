@@ -1,19 +1,11 @@
 import numpy as np
 import os
-import matplotlib.pyplot as plt
 from utils import (
     load_training_labels,
-    plot_sample_images,
     prepare_data_generators,
     build_model,
-    reorganize_files,
-    plot_training_history,
     save_model
 )
-import tensorflow as tf
-from tensorflow.keras.callbacks import EarlyStopping
-from modelstore import ModelStore
-import shutil
 
 BATCH_SIZE = 128
 INPUT_IMG_SIZE = 112
@@ -27,19 +19,9 @@ training_dir = os.path.join(base_dir, "training")
 validation_dir = os.path.join(base_dir, "validation")
 evaluation_dir = os.path.join(base_dir, "evaluation")
 
-for dataset in [training_dir, validation_dir, evaluation_dir]:
-    if not os.path.exists(dataset):
-        raise FileNotFoundError(f"Directory does not exist: {dataset}")
-
-for dataset in [training_dir, validation_dir, evaluation_dir]:
-    reorganize_files(dataset, CLASSES)
-
 training_images, training_labels = load_training_labels(training_dir)
 print(f"Loaded {len(training_images)} training images.")
 print(f"Sample training labels: {training_labels[:5]}")
-
-plot_sample_images(CLASSES, training_labels, training_images, n_samples_per_class=4)
-print("Sample images plotted.")
 
 # Prepare data generators
 training_gen, validation_gen, evaluation_gen = prepare_data_generators(

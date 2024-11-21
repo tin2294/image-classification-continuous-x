@@ -40,6 +40,9 @@ jobs:
               echo 'Dataset downloaded and unzipped. Files included:' && \
               ls -la /tmp/content/Food-11;
             "
+
+            echo "Organizing the downloaded data..."
+            docker exec tensorflow_container python workspace/src/image-classification-continuous-x/organize_data.py
           fi
 
           docker exec tensorflow_container bash -c "

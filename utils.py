@@ -179,13 +179,18 @@ def save_model(model, base_dir, accuracy, loss):
     result = model_store.upload(
         domain="image-classification",
         model=model_path,
+        # shouldnt model_store do it?
         extra=metadata
     )
 
     print(f"Model uploaded: {result}")
 
-    result["extra"] = metadata
 
+def download_latest_model():
+    storage_path = "/tmp/temp_models/"
+    os.makedirs(storage_path, exist_ok=True)
+    file_system_storage = FileSystemStorage(storage_path)
+    model_store = ModelStore(storage=file_system_storage)
     models = model_store.list_versions("image-classification")
 
     if len(models) > 0:
