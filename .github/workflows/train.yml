@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-        - 'model_train.py'
-        - 'utils.py'
+    # paths:
+    #     - 'model_train.py'
+    #     - 'utils.py'
 jobs:
   train-evaluate:
     runs-on: gpu-p100
@@ -84,7 +84,7 @@ jobs:
 
       - name: Rsync ModelStore from GPU to Node-0
         run: |
-          rsync -avz -e ssh /tmp/volume_backup.tar.gz cc@node-0:/tmp/
+          rsync -avz -e ssh /tmp/volume_backup.tar.gz cc@129.114.25.151:/tmp/
 
   redeploy:
     runs-on: node-0
