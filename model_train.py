@@ -57,6 +57,7 @@ plot_training_history(hist)
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 
+# Save Model
 model_storage_dir = "./models"
 save_model(model, model_storage_dir, evaluation_accuracy, evaluation_loss)
 
