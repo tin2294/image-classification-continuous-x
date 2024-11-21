@@ -179,7 +179,7 @@ def save_model(model, base_dir, accuracy, loss):
 
 
 def download_latest_model():
-    storage_path = "/tmp/temp_models/"
+    storage_path = "/volume/"
     model_store = ModelStore.from_file_system(root_directory=storage_path)
     models = model_store.list_versions("image-classification")
 
