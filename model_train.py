@@ -54,7 +54,7 @@ hist = model.fit(
 
 evaluation_loss, evaluation_accuracy = model.evaluate(evaluation_gen, verbose=1)
 
-# Save Model
+# Save Model first here then move to ModelStore
 model_storage_dir = "./models"
 save_model(model, model_storage_dir, evaluation_accuracy, evaluation_loss)
 
