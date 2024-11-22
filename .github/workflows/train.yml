@@ -108,6 +108,10 @@ jobs:
           echo "Checking volume content:"
           docker run --rm -v models:/volume busybox ls /volume
 
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements_docker.txt
+
       - name: Deploy Model
         run: |
           python deploy_model.py
