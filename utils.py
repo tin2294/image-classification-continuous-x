@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import shutil
 import keras
 import time
+import glob
 from modelstore import ModelStore
 from tensorflow.keras.models import load_model
 
@@ -182,16 +183,19 @@ def download_latest_model():
   model_store = ModelStore.from_file_system(root_directory=storage_path)
   models = model_store.list_versions("image-classification")
 
+  existing_models = glob.glob(os.path.join(storage_path, "model_v*"))
+  for model in existing_models:
+      print(f"Removing existing model: {model}")
+      os.remove(model)
+
   if len(models) > 0:
     latest_model_id = models[0]
     print(f"Using the latest model with ID: {latest_model_id}")
 
-    renamed_model_file = f"{storage_path}latest_model.keras"
-
     model_file_path = model_store.download(
         domain="image-classification",
         model_id=latest_model_id,
-        local_path=renamed_model_file
+        local_path=storage_path
     )
 
     print(f"Model downloaded to: {model_file_path}")

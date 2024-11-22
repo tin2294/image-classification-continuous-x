@@ -80,11 +80,11 @@ jobs:
 
       - name: Move ModelStore from volume to the server filesystem
         run: |
-          docker run --rm -v saved_models:/volume -v /tmp:/backup busybox tar czf /backup/volume_backup.tar.gz -C /volume .
+         docker run --rm -v saved_models:/volume -v /tmp:/backup busybox sh -c "mv /tmp/temp_models/model_v* /tmp/backup/"
 
       - name: Rsync ModelStore from GPU to Node-0
         run: |
-          rsync -avz -e ssh /tmp/volume_backup.tar.gz cc@129.114.25.151:/tmp/
+          rsync -avz --remove-source-files -e ssh /tmp/temp_models/model_v* cc@129.114.25.151:/tmp/backup/
 
   redeploy:
     runs-on: node-0
@@ -99,7 +99,7 @@ jobs:
 
       - name: Move ModelStore to volume
         run: |
-          docker run --rm -v models:/volume -v /tmp:/backup busybox tar xzf /backup/volume_backup.tar.gz -C /volume
+          docker run --rm -v models:/volume -v /tmp:/backup busybox cp /backup/model_v* /volume/
           echo "Checking volume content:"
           docker run --rm -v models:/volume busybox ls /volume
 
