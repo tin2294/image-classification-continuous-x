@@ -91,7 +91,7 @@ jobs:
     runs-on: node-0
     # needs: train-evaluate
     # fix accuracy threshold and other conditions
-    if: success()
+    # if: success()
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
