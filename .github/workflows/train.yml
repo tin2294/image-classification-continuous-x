@@ -98,6 +98,9 @@ jobs:
         with:
           python-version: '3.8'
 
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
       - name: Move last model to volume
         run: |
           docker run --rm -v models:/volume busybox sh -c "rm -f /volume/*.keras"
