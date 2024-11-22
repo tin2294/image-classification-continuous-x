@@ -103,7 +103,7 @@ jobs:
 
       - name: Move last model store to volume
         run: |
-          docker run --rm -v models:/volume -v /tmp:/backup busybox cp /backup/operatorai* /volume/
+          docker run --rm -v models:/volume -v /tmp:/backup busybox cp -r /backup/ /volume/
           echo "Checking volume content:"
           docker run --rm -v models:/volume busybox ls /volume
 
@@ -111,7 +111,7 @@ jobs:
         run: |
           mkdir -p ./model_storage
           rm -f ./model_storage/operatorai*
-          docker run --rm -v models:/volume -v $(pwd)/model_storage:/model_storage busybox sh -c "cp /volume/operatorai* /model_storage/"
+          docker run --rm -v models:/volume -v $(pwd)/model_storage:/model_storage busybox sh -c "cp -r /volume/operatorai* /model_storage/"
           echo "Model store copied to ./model_storage"
           ls ./model_storage
 
@@ -121,9 +121,9 @@ jobs:
           pip show tensorflow
           pip install --upgrade tensorflow
 
-      # - name: Deploy Model
-      #   run: |
-      #     python deploy_model.py
+      - name: Deploy Model
+        run: |
+          python deploy_model.py
 
       - name: Build and push Docker image
         run: |
