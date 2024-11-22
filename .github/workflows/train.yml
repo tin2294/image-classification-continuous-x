@@ -20,6 +20,7 @@ jobs:
           docker run -d --rm --name tensorflow_container \
             -v food11_data:/tmp/content/Food-11 \
             -v saved_models:/tmp/temp_models \
+            -v latest_model:/tmp/latest_model \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
@@ -80,7 +81,7 @@ jobs:
 
       - name: Move ModelStore from volume to the server filesystem
         run: |
-         docker run --rm -v saved_models:/volume -v /tmp:/backup busybox sh -c "mv /tmp/temp_models/model_v* /tmp/backup/"
+          docker run --rm -v saved_models:/volume -v /tmp/latest_model:/backup busybox sh -c "cp -r /volume/* /backup/"
 
       - name: Rsync ModelStore from GPU to Node-0
         run: |
@@ -99,7 +100,7 @@ jobs:
 
       - name: Move ModelStore to volume
         run: |
-          docker run --rm -v models:/volume -v /tmp:/backup busybox cp /backup/model_v* /volume/
+          docker run --rm -v models:/volume -v /tmp/latest_model:/backup busybox sh -c "cp /backup/model_v* /volume/"
           echo "Checking volume content:"
           docker run --rm -v models:/volume busybox ls /volume
 
