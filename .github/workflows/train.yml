@@ -120,6 +120,7 @@ jobs:
         run: |
           pip install -r requirements_docker.txt
           pip show tensorflow
+          pip install --upgrade tensorflow
 
       - name: Deploy Model
         run: |
