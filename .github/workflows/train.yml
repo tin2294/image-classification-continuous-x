@@ -119,6 +119,7 @@ jobs:
       - name: Install Dependencies
         run: |
           pip install -r requirements_docker.txt
+          pip show tensorflow
 
       - name: Deploy Model
         run: |
