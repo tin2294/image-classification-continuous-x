@@ -79,13 +79,13 @@ jobs:
         run: |
           docker stop tensorflow_container
 
-      - name: Move ModelStore from volume to the server filesystem
+      - name: Move last model from volume to the server filesystem
         run: |
           docker run --rm -v saved_models:/volume -v /tmp/latest_model:/backup busybox sh -c "cp -r /volume/* /backup/"
 
-      - name: Rsync ModelStore from GPU to Node-0
+      - name: Rsync last model from GPU to Node-0
         run: |
-          rsync -avz --remove-source-files -e ssh /tmp/temp_models/model_v* cc@129.114.25.151:/tmp/backup/
+          rsync -avz -e ssh /tmp/latest_model/model_v* cc@129.114.25.151:/tmp/backup/
 
   redeploy:
     runs-on: node-0
@@ -98,9 +98,10 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Move ModelStore to volume
+      - name: Move last model to volume
         run: |
-          docker run --rm -v models:/volume -v /tmp/latest_model:/backup busybox sh -c "cp /backup/model_v* /volume/"
+          docker run --rm -v models:/volume busybox sh -c "rm -f /volume/*.keras"
+          docker run --rm -v models:/volume -v /tmp/backup:/backup busybox sh -c "cp /backup/model_v* /volume/"
           echo "Checking volume content:"
           docker run --rm -v models:/volume busybox ls /volume
 
