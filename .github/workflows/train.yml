@@ -111,7 +111,7 @@ jobs:
       - name: Copy model from Docker volume to host filesystem
         run: |
           mkdir -p ./model_storage
-          docker run --rm -v models:/volume busybox cp /volume/model_v* ./model_storage/
+          docker run --rm -v models:/volume busybox cp /volume/* ./model_storage/
           echo "Model copied to ./model_storage"
           ls ./model_storage
 
