@@ -167,6 +167,10 @@ def save_model(model, base_dir, accuracy, loss):
   model.save(model_path, save_format="tf")
   print(f"Model saved in Keras format at {model_path}")
 
+  # try that it loads
+  model = load_model(model_path, compile=False)
+  print("LOADED MODEL IN TRAIN")
+
   metadata = {"accuracy": accuracy, "loss": loss}
 
   result = model_store.upload(

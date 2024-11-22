@@ -133,8 +133,6 @@ jobs:
 
       - name: Redeploy ML App
         run: |
-          echo "Accuracy meets threshold, triggering redeployment..."
-
           kubectl apply -f ~/image-classification-continuous-x/deploy_k8s/deployment_k8s.yaml
 
       - name: Display Docker Logs
