@@ -79,13 +79,13 @@ jobs:
         run: |
           docker stop tensorflow_container
 
-      - name: Move last model from volume to the server filesystem
+      - name: Move model store from volume to the server filesystem
         run: |
-          docker run --rm -v saved_models:/volume -v /tmp/latest_model:/backup busybox sh -c "cp -r /volume/* /backup/"
+          docker run --rm -v saved_models:/volume -v /tmp:/backup busybox tar czf /backup/volume_backup.tar.gz -C /volume .
 
-      - name: Rsync last model from GPU to Node-0
+      - name: Rsync model store from GPU to Node-0
         run: |
-          rsync -avz -e ssh /tmp/latest_model/model_v* cc@129.114.25.151:/tmp/backup/
+          rsync -avz -e ssh /tmp/volume_backup.tar.gz cc@129.114.25.151:/tmp/
 
   redeploy:
     runs-on: node-0
@@ -101,19 +101,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Move last model to volume
+      - name: Move last model store to volume
         run: |
-          docker run --rm -v models:/volume busybox sh -c "rm -f /volume/*.keras"
-          docker run --rm -v models:/volume -v /tmp/backup:/backup busybox sh -c "cp /backup/model_v* /volume/"
+          docker run --rm -v models:/volume -v /tmp:/backup busybox cp /backup/operatorai* /volume/
           echo "Checking volume content:"
           docker run --rm -v models:/volume busybox ls /volume
 
-      - name: Copy model from Docker volume to host filesystem
+      - name: Copy model store from Docker volume to host filesystem
         run: |
           mkdir -p ./model_storage
-          rm -f ./model_storage/model_v*
-          docker run --rm -v models:/volume -v $(pwd)/model_storage:/model_storage busybox sh -c "cp /volume/model_v* /model_storage/"
-          echo "Model copied to ./model_storage"
+          rm -f ./model_storage/operatorai*
+          docker run --rm -v models:/volume -v $(pwd)/model_storage:/model_storage busybox sh -c "cp /volume/operatorai* /model_storage/"
+          echo "Model store copied to ./model_storage"
           ls ./model_storage
 
       - name: Install Dependencies
@@ -122,9 +121,9 @@ jobs:
           pip show tensorflow
           pip install --upgrade tensorflow
 
-      - name: Deploy Model
-        run: |
-          python deploy_model.py
+      # - name: Deploy Model
+      #   run: |
+      #     python deploy_model.py
 
       - name: Build and push Docker image
         run: |

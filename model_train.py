@@ -70,4 +70,4 @@ with open(file_path, "w") as f:
 
 print(f"Evaluation metrics written to: {file_path}")
 
-download_latest_model()
+# download_latest_model()
