@@ -108,6 +108,13 @@ jobs:
           echo "Checking volume content:"
           docker run --rm -v models:/volume busybox ls /volume
 
+      - name: Copy model from Docker volume to host filesystem
+        run: |
+          mkdir -p ./model_storage
+          docker run --rm -v models:/volume busybox cp /volume/model_v* ./model_storage/
+          echo "Model copied to ./model_storage"
+          ls ./model_storage
+
       - name: Install Dependencies
         run: |
           pip install -r requirements_docker.txt

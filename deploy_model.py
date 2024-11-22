@@ -3,11 +3,14 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 import glob
 
-volume_dir = '/volume/'
-print(f"Contents of {volume_dir}:")
-print(os.listdir(volume_dir))
+model_dir = './model_storage/'
 
-model_files = glob.glob(f'{volume_dir}model_v*.keras')
+print("Contents of model_storage directory:")
+for root, dirs, files in os.walk(model_dir):
+    for file in files:
+        print(f"Found file: {file}")
+
+model_files = glob.glob(f'{model_dir}model_v*.keras')
 
 if model_files:
     model_file = model_files[0]
