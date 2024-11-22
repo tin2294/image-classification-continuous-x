@@ -13,7 +13,10 @@ jobs:
     env:
       DATASET_EXISTS: ''
 
-    # steps:
+    steps:
+        - name: Dummy action
+          run: |
+            echo "testing"
     #   - name: Manage Dataset Volume and Download
     #     id: manage_dataset
     #     run: |
@@ -89,9 +92,9 @@ jobs:
 
   redeploy:
     runs-on: node-0
-    # needs: train-evaluate
+    needs: train-evaluate
     # fix accuracy threshold and other conditions
-    # if: success()
+    if: success()
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
