@@ -8,88 +8,88 @@ on:
     #     - 'model_train.py'
     #     - 'utils.py'
 jobs:
-  # train-evaluate:
-  #   runs-on: gpu-p100
-  #   env:
-  #     DATASET_EXISTS: ''
+  train-evaluate:
+    runs-on: gpu-p100
+    env:
+      DATASET_EXISTS: ''
 
-  #   steps:
-  #     - name: Manage Dataset Volume and Download
-  #       id: manage_dataset
-  #       run: |
-  #         docker run -d --rm --name tensorflow_container \
-  #           -v food11_data:/tmp/content/Food-11 \
-  #           -v saved_models:/tmp/temp_models \
-  #           -v latest_model:/tmp/latest_model \
-  #           -w /workspace \
-  #           tensorflow/tensorflow:latest-gpu tail -f /dev/null
+    steps:
+      - name: Manage Dataset Volume and Download
+        id: manage_dataset
+        run: |
+          docker run -d --rm --name tensorflow_container \
+            -v food11_data:/tmp/content/Food-11 \
+            -v saved_models:/tmp/temp_models \
+            -v latest_model:/tmp/latest_model \
+            -w /workspace \
+            tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
-  #         if docker exec tensorflow_container bash -c "[ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]"; then
-  #           echo "Volume 'food11_data' already contains data. Skipping download."
-  #         else
-  #           echo "Volume 'food11_data' is empty. Downloading dataset."
+          if docker exec tensorflow_container bash -c "[ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]"; then
+            echo "Volume 'food11_data' already contains data. Skipping download."
+          else
+            echo "Volume 'food11_data' is empty. Downloading dataset."
 
-  #           docker exec tensorflow_container bash -c "
-  #             set -e;
-  #             echo 'Downloading and setting up dataset...';
-  #             mkdir -p /tmp/content/Food-11 && \
-  #             apt-get update && \
-  #             pip3 install gdown && \
-  #             gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
-  #             unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
-  #             echo 'Dataset downloaded and unzipped. Files included:' && \
-  #             ls -la /tmp/content/Food-11;
-  #           "
+            docker exec tensorflow_container bash -c "
+              set -e;
+              echo 'Downloading and setting up dataset...';
+              mkdir -p /tmp/content/Food-11 && \
+              apt-get update && \
+              pip3 install gdown && \
+              gdown https://drive.google.com/uc?id=1dt3CD3ICdLbTf80sNJ25TPBDKu_qyCnq -O /tmp/content/Food-11/dataset.zip && \
+              unzip /tmp/content/Food-11/dataset.zip -d /tmp/content/Food-11 && \
+              echo 'Dataset downloaded and unzipped. Files included:' && \
+              ls -la /tmp/content/Food-11;
+            "
 
-  #           echo "Organizing the downloaded data..."
-  #           docker exec tensorflow_container python workspace/src/image-classification-continuous-x/organize_data.py
-  #         fi
+            echo "Organizing the downloaded data..."
+            docker exec tensorflow_container python workspace/src/image-classification-continuous-x/organize_data.py
+          fi
 
-  #         docker exec tensorflow_container bash -c "
-  #           apt-get update && apt-get install -y git;
-  #           if [ -d 'workspace/src/image-classification-continuous-x' ]; then
-  #             echo 'Repository already exists. Updating...';
-  #             cd /workspace/image-classification-continuous-x && git pull origin main;
-  #           else
-  #             echo 'Cloning repository...';
-  #             git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
-  #           fi
-  #         "
+          docker exec tensorflow_container bash -c "
+            apt-get update && apt-get install -y git;
+            if [ -d 'workspace/src/image-classification-continuous-x' ]; then
+              echo 'Repository already exists. Updating...';
+              cd /workspace/image-classification-continuous-x && git pull origin main;
+            else
+              echo 'Cloning repository...';
+              git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
+            fi
+          "
 
-  #     - name: Install Dependencies
-  #       run: |
-  #         docker exec tensorflow_container pip install -r workspace/src/image-classification-continuous-x/requirements_docker.txt
+      - name: Install Dependencies
+        run: |
+          docker exec tensorflow_container pip install -r workspace/src/image-classification-continuous-x/requirements_docker.txt
 
-  #     - name: Run Training Script
-  #       run: |
-  #         docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
-  #       env:
-  #         STORAGE_PATH: /home/cc/models
+      - name: Run Training Script
+        run: |
+          docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
+        env:
+          STORAGE_PATH: /home/cc/models
 
-  #     - name: Set Accuracy as Environment Variable
-  #       run: |
-  #         EVALUATION_ACCURACY=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_accuracy" | cut -d' ' -f2)
-  #         EVALUATION_LOSS=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_loss" | cut -d' ' -f2)
-  #         echo "Extracted evaluation_accuracy: $EVALUATION_ACCURACY"
-  #         echo "Extracted evaluation_loss: $EVALUATION_LOSS"
-  #         echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
-  #         echo "LOSS=$EVALUATION_LOSS" >> $GITHUB_ENV
+      - name: Set Accuracy as Environment Variable
+        run: |
+          EVALUATION_ACCURACY=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_accuracy" | cut -d' ' -f2)
+          EVALUATION_LOSS=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_loss" | cut -d' ' -f2)
+          echo "Extracted evaluation_accuracy: $EVALUATION_ACCURACY"
+          echo "Extracted evaluation_loss: $EVALUATION_LOSS"
+          echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
+          echo "LOSS=$EVALUATION_LOSS" >> $GITHUB_ENV
 
-  #     - name: Stop Container
-  #       run: |
-  #         docker stop tensorflow_container
+      - name: Stop Container
+        run: |
+          docker stop tensorflow_container
 
-  #     - name: Move last model from volume to the server filesystem
-  #       run: |
-  #         docker run --rm -v saved_models:/volume -v /tmp/latest_model:/backup busybox sh -c "cp -r /volume/* /backup/"
+      - name: Move last model from volume to the server filesystem
+        run: |
+          docker run --rm -v saved_models:/volume -v /tmp/latest_model:/backup busybox sh -c "cp -r /volume/* /backup/"
 
-  #     - name: Rsync last model from GPU to Node-0
-  #       run: |
-  #         rsync -avz -e ssh /tmp/latest_model/model_v* cc@129.114.25.151:/tmp/backup/
+      - name: Rsync last model from GPU to Node-0
+        run: |
+          rsync -avz -e ssh /tmp/latest_model/model_v* cc@129.114.25.151:/tmp/backup/
 
   redeploy:
     runs-on: node-0
-    # needs: train-evaluate
+    needs: train-evaluate
     # fix accuracy threshold and other conditions
     if: success()
     steps:
