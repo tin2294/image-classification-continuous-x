@@ -155,24 +155,44 @@ def plot_training_history(hist, filename='training_history.png'):
 
 
 def save_model(model, base_dir, accuracy, loss):
-    storage_path = "/tmp/temp_models/"
-    model_store = ModelStore.from_file_system(root_directory=storage_path)
-    os.makedirs(base_dir, exist_ok=True)
+  storage_path = "/tmp/temp_models/"
+  model_store = ModelStore.from_file_system(root_directory=storage_path)
+  os.makedirs(base_dir, exist_ok=True)
 
-    timestamp = int(time.time())
-    versioned_model_name = f"model_v{timestamp}.keras"
-    model_path = os.path.join(base_dir, versioned_model_name)
+  timestamp = int(time.time())
+  versioned_model_name = f"model_v{timestamp}.keras"
+  model_path = os.path.join(base_dir, versioned_model_name)
 
-    model.save(model_path, save_format="keras")
-    print(f"Model saved in Keras format at {model_path}")
+  model.save(model_path, save_format="keras")
+  print(f"Model saved in Keras format at {model_path}")
 
-    metadata = {"accuracy": accuracy, "loss": loss}
+  metadata = {"accuracy": accuracy, "loss": loss}
 
-    result = model_store.upload(
+  result = model_store.upload(
+      domain="image-classification",
+      model=model_path,
+      # shouldnt model_store do it?
+      extra=metadata
+  )
+
+  print(f"Model uploaded: {result}")
+
+def download_latest_model():
+  storage_path = "/tmp/temp_models/"
+  model_store = ModelStore.from_file_system(root_directory=storage_path)
+  models = model_store.list_versions("image-classification")
+
+  if len(models) > 0:
+    latest_model_id = models[0]
+    print(f"Using the latest model with ID: {latest_model_id}")
+
+    model_file_path = model_store.download(
         domain="image-classification",
-        model=model_path,
-        # shouldnt model_store do it?
-        extra=metadata
+        model_id=latest_model_id,
+        local_path=storage_path
     )
 
-    print(f"Model uploaded: {result}")
+    print(f"Model downloaded to: {model_file_path}")
+
+  else:
+      print("No models found.")

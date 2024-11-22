@@ -92,6 +92,11 @@ jobs:
     # fix accuracy threshold and other conditions
     if: success()
     steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
       - name: Move ModelStore to volume
         run: |
           docker run --rm -v models:/volume -v /tmp:/backup busybox tar xzf /backup/volume_backup.tar.gz -C /volume
@@ -100,7 +105,7 @@ jobs:
 
       - name: Deploy Model
         run: |
-          docker run --rm -v models:/volume -v $GITHUB_WORKSPACE:/repo tensorflow/tensorflow:latest-gpu python /repo/image-classification-continuous-x/deploy_model.py
+          python deploy_model.py
 
       - name: Build and push Docker image
         run: |

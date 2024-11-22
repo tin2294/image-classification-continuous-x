@@ -4,7 +4,8 @@ from utils import (
     load_training_labels,
     prepare_data_generators,
     build_model,
-    save_model
+    save_model,
+    download_latest_model
 )
 
 BATCH_SIZE = 128
@@ -68,3 +69,5 @@ with open(file_path, "w") as f:
     f.write(f"evaluation_loss: {evaluation_loss}\n")
 
 print(f"Evaluation metrics written to: {file_path}")
+
+download_latest_model()
