@@ -164,7 +164,7 @@ def save_model(model, base_dir, accuracy, loss):
   versioned_model_name = f"model_v{timestamp}.keras"
   model_path = os.path.join(base_dir, versioned_model_name)
 
-  model.save(model_path, save_format="keras")
+  model.save(model_path, save_format="tf")
   print(f"Model saved in Keras format at {model_path}")
 
   metadata = {"accuracy": accuracy, "loss": loss}
