@@ -167,10 +167,6 @@ def save_model(model, base_dir, accuracy, loss):
   model.save(model_path, save_format="tf")
   print(f"Model saved in Keras format at {model_path}")
 
-  # try that it loads
-  model = load_model(model_path, compile=False)
-  print("LOADED MODEL IN TRAIN")
-
   metadata = {"accuracy": accuracy, "loss": loss}
 
   result = model_store.upload(
@@ -197,10 +193,9 @@ def download_latest_model():
     latest_model_id = models[0]
     print(f"Using the latest model with ID: {latest_model_id}")
 
-    model_file_path = model_store.download(
+    model_file_path = model_store.load(
         domain="image-classification",
         model_id=latest_model_id,
-        local_path=storage_path
     )
 
     print(f"Model downloaded to: {model_file_path}")
