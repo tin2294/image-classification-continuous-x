@@ -186,10 +186,12 @@ def download_latest_model():
     latest_model_id = models[0]
     print(f"Using the latest model with ID: {latest_model_id}")
 
+    renamed_model_file = f"{storage_path}latest_model.keras"
+
     model_file_path = model_store.download(
         domain="image-classification",
         model_id=latest_model_id,
-        local_path=storage_path
+        local_path=renamed_model_file
     )
 
     print(f"Model downloaded to: {model_file_path}")
