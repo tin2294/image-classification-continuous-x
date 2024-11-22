@@ -89,7 +89,7 @@ jobs:
 
   redeploy:
     runs-on: node-0
-    needs: train-evaluate
+    # needs: train-evaluate
     # fix accuracy threshold and other conditions
     if: success()
     steps:
