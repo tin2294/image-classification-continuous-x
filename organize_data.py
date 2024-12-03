@@ -1,5 +1,5 @@
 import os
-import reorganize_files from utils
+from utils import reorganize_files
 
 CLASSES = np.array(["Bread", "Dairy product", "Dessert", "Egg", "Fried food",
                     "Meat", "Noodles/Pasta", "Rice", "Seafood", "Soup",
