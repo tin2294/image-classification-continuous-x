@@ -1,4 +1,5 @@
 import os
+import numpy as np
 from utils import reorganize_files
 
 CLASSES = np.array(["Bread", "Dairy product", "Dessert", "Egg", "Fried food",
