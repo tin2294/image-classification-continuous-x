@@ -8,7 +8,7 @@ on:
     #     - 'model_train.py'
     #     - 'utils.py'
 jobs:
-  train-evaluate:
+  train:
     runs-on: gpu-p100
     env:
       DATASET_EXISTS: ''
@@ -20,7 +20,6 @@ jobs:
           docker run -d --rm --name tensorflow_container \
             -v food11_data:/tmp/content/Food-11 \
             -v saved_models:/tmp/temp_models \
-            -v latest_model:/tmp/latest_model \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
@@ -75,21 +74,43 @@ jobs:
           echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
           echo "LOSS=$EVALUATION_LOSS" >> $GITHUB_ENV
 
+      - name: Generate SSH Key
+        run: |
+          ssh-keygen -t rsa -b 4096 -C "tcz212@nyu.edu" -f /home/cc/.ssh/id_rsa -N ""
+
+      - name: Add SSH Public Key to Node-0
+        env:
+          NODE_0_IP: 129.114.25.151
+        run: |
+          PUB_KEY=$(cat /home/cc/.ssh/id_rsa.pub)
+          ssh cc@${NODE_0_IP} "mkdir -p ~/.ssh && echo '${PUB_KEY}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+
+      - name: Test SSH Connection
+        env:
+          NODE_0_IP: 129.114.25.151
+        run: |
+          ssh -o StrictHostKeyChecking=no cc@${NODE_0_IP} "echo 'SSH connection to Node-0 successful!'"
+  
+      - name: Rsync model store from GPU to Node-0
+        env:
+          NODE_0_IP: 129.114.25.151
+        run: |
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no" /tmp/volume_backup.tar.gz cc@${NODE_0_IP}:/tmp/
+
       - name: Stop Container
         run: |
           docker stop tensorflow_container
 
-      - name: Move model store from volume to the server filesystem
-        run: |
-          docker run --rm -v saved_models:/volume -v /tmp:/backup busybox tar czf /backup/volume_backup.tar.gz -C /volume .
+      # - name: Move model store from volume to the server filesystem
+      #   run: |
+      #     docker run --rm -v saved_models:/volume -v /tmp:/backup busybox tar czf /backup/volume_backup.tar.gz -C /volume .
 
-      - name: Rsync model store from GPU to Node-0
-        run: |
-          rsync -avz -e ssh /tmp/volume_backup.tar.gz cc@129.114.25.151:/tmp/
+  # evaluate:
+  #   runs-on: gpu-p100
 
   redeploy:
     runs-on: node-0
-    needs: train-evaluate
+    needs: train
     # fix accuracy threshold and other conditions
     if: success()
     steps:
@@ -98,39 +119,37 @@ jobs:
         with:
           python-version: '3.8'
 
+      # need to remove model_storage first here, does not work w model store????
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Move last model store to volume
-        run: |
-          docker run --rm -v models:/volume -v /tmp:/backup busybox cp -r /backup/ /volume/
-          echo "Checking volume content:"
-          docker run --rm -v models:/volume busybox ls /volume
+      # - name: Move last model store to volume
+      #   run: |
+      #     docker run --rm -v models:/volume -v /tmp:/backup busybox cp -r /backup/ /volume/
+      #     echo "Checking volume content:"
+      #     docker run --rm -v models:/volume busybox ls /volume
 
-      - name: Copy model store from Docker volume to host filesystem
-        run: |
-          mkdir -p ./model_storage
-          rm -f ./model_storage/operatorai*
-          docker run --rm -v models:/volume -v $(pwd)/model_storage:/model_storage busybox sh -c "cp -r /volume/operatorai* /model_storage/"
-          echo "Model store copied to ./model_storage"
-          ls ./model_storage
+      # - name: Copy model store from Docker volume to host filesystem
+      #   run: |
+      #     mkdir -p ./model_storage
+      #     rm -f ./model_storage/operatorai*
+      #     docker run --rm -v models:/volume -v $(pwd)/model_storage:/model_storage busybox sh -c "cp -r /volume/operatorai* /model_storage/"
+      #     echo "Model store copied to ./model_storage"
+      #     ls ./model_storage
 
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements_docker.txt
-          pip show tensorflow
-          pip install --upgrade tensorflow
+      # - name: Install Modelstore
+      #   run: |
+      #     pip install -r 
 
-      - name: Deploy Model
-        run: |
-          python deploy_model.py
+      # - name: Download Model with specific version and copy to ml-app directory (/home/cc/k8s-ml/app/model.keras)
+      #   run: |
 
-      - name: Build and push Docker image
+      - name: Build and push new Docker image
         run: |
-          docker build -t node-0:5000/ml-app:latest app
+          docker build -t node-0:5000/ml-app:latest /home/cc/k8s-ml/app
           docker push node-0:5000/ml-app:latest
 
-      - name: Redeploy ML App
+      - name: Redeploy ML App (set image to redeploy and check after a while that the right one is running)
         run: |
           kubectl apply -f ~/image-classification-continuous-x/deploy_k8s/deployment_k8s.yaml
 
