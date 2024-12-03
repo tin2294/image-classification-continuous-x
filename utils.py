@@ -17,6 +17,11 @@ def reorganize_files(dataset_path, classes):
 
         # Find all images for this class in the dataset directory
         files = [f for f in os.listdir(dataset_path) if f.startswith(f"{i}_")]
+        if not files:
+            print(f"No files found for class {class_name} ({i}) in {dataset_path}")
+        else:
+            print(f"Moving {len(files)} files to {class_dir}")
+
         for f in files:
             src = os.path.join(dataset_path, f)
             dst = os.path.join(class_dir, f)
