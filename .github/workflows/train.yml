@@ -82,7 +82,12 @@ jobs:
 
       - name: Generate SSH Key
         run: |
-          ssh-keygen -t rsa -b 4096 -C "tcz212@nyu.edu" -f /home/cc/.ssh/id_rsa -N ""
+          if [ ! -f /home/cc/.ssh/id_rsa ]; then
+            echo "SSH key does not exist. Generating a new one..."
+            ssh-keygen -t rsa -b 4096 -C "tcz212@nyu.edu" -f /home/cc/.ssh/id_rsa -N ""
+          else
+            echo "SSH key already exists. Skipping key generation."
+          fi
 
       - name: Add SSH Public Key to Node-0
         env:
