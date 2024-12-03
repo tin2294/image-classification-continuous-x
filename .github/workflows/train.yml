@@ -23,6 +23,17 @@ jobs:
             -w /workspace \
             tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
+            docker exec tensorflow_container bash -c "
+            apt-get update && apt-get install -y git;
+            if [ -d 'workspace/src/image-classification-continuous-x' ]; then
+              echo 'Repository already exists. Updating...';
+              cd /workspace/image-classification-continuous-x && git pull origin main;
+            else
+              echo 'Cloning repository...';
+              git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
+            fi
+          "
+
           if docker exec tensorflow_container bash -c "[ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]"; then
             echo "Volume 'food11_data' already contains data. Skipping download."
           else
@@ -43,17 +54,6 @@ jobs:
             echo "Organizing the downloaded data..."
             docker exec tensorflow_container python workspace/src/image-classification-continuous-x/organize_data.py
           fi
-
-          docker exec tensorflow_container bash -c "
-            apt-get update && apt-get install -y git;
-            if [ -d 'workspace/src/image-classification-continuous-x' ]; then
-              echo 'Repository already exists. Updating...';
-              cd /workspace/image-classification-continuous-x && git pull origin main;
-            else
-              echo 'Cloning repository...';
-              git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
-            fi
-          "
 
       - name: Install Dependencies
         run: |
