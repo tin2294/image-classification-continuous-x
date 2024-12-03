@@ -89,7 +89,13 @@ jobs:
           NODE_0_IP: 129.114.25.151
         run: |
           PUB_KEY=$(cat /home/cc/.ssh/id_rsa.pub)
-          ssh cc@${NODE_0_IP} "mkdir -p ~/.ssh && echo '${PUB_KEY}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+          echo "Adding SSH key to remote server"
+          ssh -vvv cc@${NODE_0_IP} "mkdir -p ~/.ssh && echo '${PUB_KEY}' >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+
+      - name: Add SSH Host to known_hosts
+        run: |
+          ssh-keyscan 129.114.25.151 >> ~/.ssh/known_hosts
+          cat ~/.ssh/known_hosts
 
       - name: Test SSH Connection
         env:
