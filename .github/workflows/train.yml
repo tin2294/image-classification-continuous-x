@@ -79,66 +79,14 @@ jobs:
           echo "Extracted evaluation_loss: $EVALUATION_LOSS"
           echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
           echo "LOSS=$EVALUATION_LOSS" >> $GITHUB_ENV
-
-      - name: Generate SSH Key
-        run: |
-          if [ ! -f /home/cc/.ssh/id_rsa ]; then
-            echo "SSH key does not exist. Generating a new one..."
-            ssh-keygen -t rsa -b 4096 -C "tcz212@nyu.edu" -f /home/cc/.ssh/id_rsa -N ""
-          else
-            echo "SSH key already exists. Skipping key generation."
-          fi
-
-      - name: Add SSH Public Key to Node-0
-        env:
-          NODE_0_IP: 129.114.25.151
-        run: |
-          set -e  # Exit immediately on error
-          set -x  # Debugging enabled
-
-          # Ensure public key exists locally
-          if [[ ! -f /home/cc/.ssh/id_rsa.pub ]]; then
-            echo "Error: Public key does not exist at /home/cc/.ssh/id_rsa.pub"
-            exit 1
-          fi
-
-          PUB_KEY=$(cat /home/cc/.ssh/id_rsa.pub)
-          echo "Adding SSH key to remote server ${NODE_0_IP}"
-
-          # Add public key to remote server's authorized_keys
-          ssh -o StrictHostKeyChecking=no -vvv cc@${NODE_0_IP} <<EOF
-          mkdir -p ~/.ssh
-          chmod 700 ~/.ssh
-          echo '${PUB_KEY}' >> ~/.ssh/authorized_keys
-          chmod 600 ~/.ssh/authorized_keys
-          EOF
-
-          echo "SSH key successfully added to ${NODE_0_IP}"
-
-      - name: Add SSH Host to known_hosts
-        run: |
-          ssh-keyscan 129.114.25.151 >> ~/.ssh/known_hosts
-          cat ~/.ssh/known_hosts
-
-      - name: Test SSH Connection
-        env:
-          NODE_0_IP: 129.114.25.151
-        run: |
-          ssh -o StrictHostKeyChecking=no cc@${NODE_0_IP} "echo 'SSH connection to Node-0 successful!'"
   
       - name: Rsync model store from GPU to Node-0
-        env:
-          NODE_0_IP: 129.114.25.151
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no" /tmp/volume_backup.tar.gz cc@${NODE_0_IP}:/tmp/
+          rsync -avz -e ssh /tmp/volume_backup.tar.gz cc@129.114.25.151:/tmp/
 
       - name: Stop Container
         run: |
           docker stop tensorflow_container
-
-      # - name: Move model store from volume to the server filesystem
-      #   run: |
-      #     docker run --rm -v saved_models:/volume -v /tmp:/backup busybox tar czf /backup/volume_backup.tar.gz -C /volume .
 
   # evaluate:
   #   runs-on: gpu-p100
