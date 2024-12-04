@@ -155,7 +155,7 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.close()
 
 
-def save_model(model, base_dir, accuracy, loss):
+def save_model(model, base_dir):
   storage_path = "/tmp/temp_models/"
   model_store = ModelStore.from_file_system(root_directory=storage_path)
   os.makedirs(base_dir, exist_ok=True)
@@ -166,8 +166,6 @@ def save_model(model, base_dir, accuracy, loss):
 
   model.save(model_path, save_format="keras")
   print(f"Model saved in Keras format at {model_path}")
-
-  metadata = {"accuracy": accuracy, "loss": loss}
 
   result = model_store.upload(
       domain="image-classification",
