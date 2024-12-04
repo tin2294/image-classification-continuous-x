@@ -138,6 +138,11 @@ jobs:
           docker build -t node-0:5000/ml-app:$new_version /home/cc/k8s-ml/app
           docker push node-0:5000/ml-app:$new_version
 
+      - name: Cleanup unused Docker resources
+        run: |
+          set -e
+          docker system prune -f || echo "Docker cleanup failed"
+
       - name: Set new docker image with the last model
         run: |
           current_version=$(kubectl get deployment ml-kube-app -o=jsonpath='{.spec.template.spec.containers[?(@.name=="ml-kube-app")].image}' | awk -F: '{print $NF}')
