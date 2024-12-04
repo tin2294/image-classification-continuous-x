@@ -119,12 +119,13 @@ jobs:
         run: |
           cd ~/extracted/operatorai-model-store/image-classification/
           cd "$(find "$(ls -d 2024* | grep -v '^versions$' | sort -r | head -n 1)" -type d -print | sort | tail -n 1)"
+          rm -rf /home/cc/model-to-deploy/*
           tar -xzf artifacts.tar.gz -C ~/model-to-deploy
 
       - name: Copy model to ml-app directory (/home/cc/k8s-ml/app/model.keras)
         run: |
           ls -ld /home/cc/k8s-ml/app/
-        # cp ~/model-to-deploy/*.keras ~/k8s-ml/app/model.keras
+          cp ~/model-to-deploy/*.keras ~/k8s-ml/app/model.keras
 
       - name: Set new docker image with the last model
         run: |
