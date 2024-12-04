@@ -108,7 +108,7 @@ jobs:
 
       - name: Install Modelstore
         run: |
-          pip install -r modelstore
+          pip install modelstore
 
       - name: Extract model store
         run: |
