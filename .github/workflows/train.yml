@@ -118,7 +118,7 @@ jobs:
       - name: Extract last model
         run: |
           cd ~/extracted/operatorai-model-store/image-classification/
-          latest_dir=$(ls -d 2024* | grep -v '^versions$' | sort -r | head -n 1)
+          latest_dir=$(find "$(ls -d 2024* | grep -v '^versions$' | sort -r | head -n 1)" -type d -print | sort | tail -n 1)
           echo "Latest directory: $latest_dir"
           cd "$latest_dir"
           rm -rf ~/model-to-deploy/*
