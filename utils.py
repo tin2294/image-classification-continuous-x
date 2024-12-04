@@ -164,16 +164,14 @@ def save_model(model, base_dir, accuracy, loss):
   versioned_model_name = f"model_v{timestamp}.keras"
   model_path = os.path.join(base_dir, versioned_model_name)
 
-  model.save(model_path, save_format="tf")
+  model.save(model_path, save_format="keras")
   print(f"Model saved in Keras format at {model_path}")
 
   metadata = {"accuracy": accuracy, "loss": loss}
 
   result = model_store.upload(
       domain="image-classification",
-      model=model_path,
-      # shouldnt model_store do it?
-      extra=metadata
+      model=model_path
   )
 
   print(f"Model uploaded: {result}")
