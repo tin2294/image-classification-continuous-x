@@ -94,7 +94,10 @@ jobs:
 
   redeploy:
     runs-on: node-0
+    # train for now
     needs: train
+    # needs: evaluate
+
     # fix accuracy threshold and other conditions
     if: success()
     steps:
@@ -103,30 +106,22 @@ jobs:
         with:
           python-version: '3.8'
 
-      # need to remove model_storage first here, does not work w model store????
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Install Modelstore
+        run: |
+          pip install -r modelstore
 
-      # - name: Move last model store to volume
-      #   run: |
-      #     docker run --rm -v models:/volume -v /tmp:/backup busybox cp -r /backup/ /volume/
-      #     echo "Checking volume content:"
-      #     docker run --rm -v models:/volume busybox ls /volume
+      - name: Extract model store
+        run: |
+          cd /tmp
+          tar -xzf volume_backup.tar.gz -C ~/extracted
 
-      # - name: Copy model store from Docker volume to host filesystem
-      #   run: |
-      #     mkdir -p ./model_storage
-      #     rm -f ./model_storage/operatorai*
-      #     docker run --rm -v models:/volume -v $(pwd)/model_storage:/model_storage busybox sh -c "cp -r /volume/operatorai* /model_storage/"
-      #     echo "Model store copied to ./model_storage"
-      #     ls ./model_storage
+      - name: Extract last model
+        run: |
+          cd ~/extracted/operatorai-model-store/image-classification/
+          cd "$(find "$(ls -d 2024* | grep -v '^versions$' | sort -r | head -n 1)" -type d -print | sort | tail -n 1)"
+          tar -xzf artifacts.tar.gz -C ~/model-to-deploy
 
-      # - name: Install Modelstore
-      #   run: |
-      #     pip install -r 
-
-      # - name: Download Model with specific version and copy to ml-app directory (/home/cc/k8s-ml/app/model.keras)
-      #   run: |
+      # - name: Copy model to ml-app directory (/home/cc/k8s-ml/app/model.keras)
 
       - name: Build and push new Docker image
         run: |
