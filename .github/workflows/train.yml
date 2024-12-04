@@ -121,9 +121,17 @@ jobs:
           cd "$(find "$(ls -d 2024* | grep -v '^versions$' | sort -r | head -n 1)" -type d -print | sort | tail -n 1)"
           tar -xzf artifacts.tar.gz -C ~/model-to-deploy
 
-      # - name: Copy model to ml-app directory (/home/cc/k8s-ml/app/model.keras)
+      - name: Copy model to ml-app directory (/home/cc/k8s-ml/app/model.keras)
+        run: |
+          cp ~/model-to-deploy/*.keras /home/cc/k8s-ml/app/model.keras
 
-      - name: Build and push new Docker image
+      - name: Set new docker image with the last model
+        run: |
+          current_version=$(kubectl get deployment ml-kube-app -o=jsonpath='{.spec.template.spec.containers[?(@.name=="ml-kube-app")].image}' | awk -F: '{print $NF}')
+          new_version=$(echo $current_version | awk -F. '{printf "%d.%d.%d", $1, $2, $3+1}')
+          kubectl set image deployment ml-kube-app ml-kube-app=node-0:5000/ml-app:$new_version
+
+      - name: Build and push Docker image
         run: |
           docker build -t node-0:5000/ml-app:latest /home/cc/k8s-ml/app
           docker push node-0:5000/ml-app:latest
