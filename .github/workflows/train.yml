@@ -140,6 +140,9 @@ jobs:
 
       - name: Set new docker image with the last model
         run: |
+          current_version=$(kubectl get deployment ml-kube-app -o=jsonpath='{.spec.template.spec.containers[?(@.name=="ml-kube-app")].image}' | awk -F: '{print $NF}')
+          new_version=$(echo $current_version | awk -F. '{printf "%d.%d.%d", $1, $2, $3+1}')
+          echo "Setting image for version: $new_version"
           kubectl set image deployment ml-kube-app ml-kube-app=node-0:5000/ml-app:$new_version
 
       - name: Wait for deployment to complete
