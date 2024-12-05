@@ -7,7 +7,7 @@ MODEL_DIR = "/tmp/model_to_deploy"
 OUTPUT_FILE = "/tmp/temp_models/evaluation_metrics.txt"
 # TO DO: Fix threshold when model is improved
 ACCURACY_THRESHOLD = 0.1
-CONFUSION_MATRIX_FILE = "/tmp/temp_models/confusion_matrix.txt"
+CONFUSION_MATRIX_FILE = "/tmp/temp_models/confusion_matrix.pdf"
 EVALUATION_DIR = "/tmp/content/Food-11/evaluation"
 INPUT_IMG_SIZE = 112
 BATCH_SIZE = 32
