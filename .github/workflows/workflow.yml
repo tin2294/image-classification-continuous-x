@@ -104,7 +104,7 @@ jobs:
           docker run -d --rm --name eval_container \
           -v food11_data:/tmp/content/Food-11 \
           -v saved_models:/tmp/temp_models \
-          -v model-to-deploy:/tmp/model_to_deploy
+          -v model-to-deploy:/tmp/model_to_deploy \
           -w /workspace \
           tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
