@@ -1,6 +1,6 @@
 import tensorflow as tf
 import os
-from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix
+from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, classification_report
 import numpy as np
 from utils import create_image_generator
 
