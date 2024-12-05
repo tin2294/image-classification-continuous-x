@@ -183,7 +183,7 @@ jobs:
           current_version=$(kubectl get deployment ml-kube-app -o=jsonpath='{.spec.template.spec.containers[?(@.name=="ml-kube-app")].image}' | awk -F: '{print $NF}')
           new_version=$(echo $current_version | awk -F. '{printf "%d.%d.%d", $1, $2, $3+1}')
           echo "Building and pushing image for version: $new_version"
-          docker build -t node-0:5000/ml-app:$new_version /home/cc/k8s-ml/app
+          docker build --network host --no-cache -t node-0:5000/ml-app:$new_version /home/cc/k8s-ml/app
           docker push node-0:5000/ml-app:$new_version
 
       - name: Cleanup unused Docker resources

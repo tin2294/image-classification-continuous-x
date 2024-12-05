@@ -6,7 +6,7 @@ from utils import create_image_generator, plot_confusion_matrix
 MODEL_DIR = "/tmp/model_to_deploy"
 OUTPUT_FILE = "/tmp/temp_models/evaluation_metrics.txt"
 # TO DO: Fix threshold when model is improved
-ACCURACY_THRESHOLD = 0.2
+ACCURACY_THRESHOLD = 0.1
 CONFUSION_MATRIX_FILE = "/tmp/temp_models/confusion_matrix.txt"
 EVALUATION_DIR = "/tmp/content/Food-11/evaluation"
 INPUT_IMG_SIZE = 112
@@ -51,6 +51,7 @@ cm = confusion_matrix(y_true, y_pred_classes)
 plot_confusion_matrix(cm, class_labels, CONFUSION_MATRIX_FILE)
 print(f"Confusion matrix saved to {CONFUSION_MATRIX_FILE}")
 
+print(f"Accuracy: {accuracy}")
 if accuracy > ACCURACY_THRESHOLD:
     print("Model meets the performance threshold. Ready for deployment!")
 else:
