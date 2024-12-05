@@ -1,4 +1,4 @@
-name: Train Model
+name: Continuous X Workflow
 
 on:
   push:
@@ -99,15 +99,31 @@ jobs:
         with:
           python-version: '3.8'
 
-      - name: Run Evaluation Script
+      - name: Start Container
         run: |
           docker run -d --rm --name eval_container \
           -v food11_data:/tmp/content/Food-11 \
           -v saved_models:/tmp/temp_models \
           -w /workspace \
           tensorflow/tensorflow:latest-gpu tail -f /dev/null
+
+          docker exec eval_container bash -c "
+          apt-get update && apt-get install -y git;
+          if [ -d 'workspace/src/image-classification-continuous-x' ]; then
+            echo 'Repository already exists. Updating...';
+            cd /workspace/image-classification-continuous-x && git pull origin main;
+          else
+            echo 'Cloning repository...';
+            git clone https://github.com/tin2294/image-classification-continuous-x.git workspace/src/image-classification-continuous-x;
+          fi
+          "
+
+      - name: Run evaluate script
+        run: |
           docker exec eval_container python workspace/src/image-classification-continuous-x/evaluate_model.py
 
+      - name: Stop container
+        run: |
           docker stop eval_container
 
   redeploy:
