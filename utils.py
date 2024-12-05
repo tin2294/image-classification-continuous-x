@@ -4,11 +4,8 @@ import tensorflow as tf
 from PIL import Image
 import matplotlib.pyplot as plt
 import shutil
-import keras
 import time
-import glob
 from modelstore import ModelStore
-from tensorflow.keras.models import load_model
 
 def reorganize_files(dataset_path, classes):
     for i, class_name in enumerate(classes):
@@ -174,27 +171,25 @@ def save_model(model, base_dir):
 
   print(f"Model uploaded: {result}")
 
-def download_latest_model():
-  model_store_path = "/tmp/temp_models/"
-  storage_path = "/tmp/latest_model/"
-  model_store = ModelStore.from_file_system(root_directory=model_store_path)
-  models = model_store.list_versions("image-classification")
+def plot_confusion_matrix(cm, class_labels, output_path):
+  plt.figure(figsize=(10, 8))
+  plt.imshow(cm, interpolation='nearest', cmap=plt.cm.Blues)
+  plt.title("Confusion Matrix")
+  plt.colorbar()
+  tick_marks = np.arange(len(class_labels))
+  plt.xticks(tick_marks, class_labels, rotation=45)
+  plt.yticks(tick_marks, class_labels)
 
-  existing_models = glob.glob(os.path.join(storage_path, "model_v*"))
-  for model in existing_models:
-      print(f"Removing existing model: {model}")
-      os.remove(model)
+  # Normalize the matrix
+  cm_normalized = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+  thresh = cm.max() / 2.0
+  for i, j in np.ndindex(cm.shape):
+      plt.text(j, i, f"{cm[i, j]}\n({cm_normalized[i, j]:.2f})",
+                horizontalalignment="center",
+                color="white" if cm[i, j] > thresh else "black")
 
-  if len(models) > 0:
-    latest_model_id = models[0]
-    print(f"Using the latest model with ID: {latest_model_id}")
-
-    model_file_path = model_store.load(
-        domain="image-classification",
-        model_id=latest_model_id,
-    )
-
-    print(f"Model downloaded to: {model_file_path}")
-
-  else:
-      print("No models found.")
+  plt.tight_layout()
+  plt.ylabel('True label')
+  plt.xlabel('Predicted label')
+  plt.savefig(output_path)
+  plt.close()
