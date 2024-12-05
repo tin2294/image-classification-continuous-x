@@ -1,11 +1,5 @@
-tensorflow
-numpy==1.23.0
-pillow==9.1.0
-pytest
 matplotlib
-pandas
-gdown
-keras
 modelstore
 scikit-learn
 scipy
+numpy
