@@ -9,3 +9,4 @@ keras
 modelstore
 glob
 scikit-learn
+scipy
