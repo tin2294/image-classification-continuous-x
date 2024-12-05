@@ -118,6 +118,10 @@ jobs:
           fi
           "
 
+      - name: Install Dependencies
+        run: |
+          docker exec eval_container pip install -r workspace/src/image-classification-continuous-x/requirements_docker.txt
+
       - name: Run evaluate script
         run: |
           docker exec eval_container python workspace/src/image-classification-continuous-x/evaluate_model.py
