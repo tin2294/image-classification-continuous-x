@@ -89,15 +89,30 @@ jobs:
         run: |
           docker stop tensorflow_container
 
-  # evaluate:
-  #   runs-on: gpu-p100
+  evaluate:
+    runs-on: gpu-p100
+    needs: train
+    if: success()
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Run Evaluation Script
+        run: |
+          docker run -d --rm --name eval_container \
+          -v food11_data:/tmp/content/Food-11 \
+          -v saved_models:/tmp/temp_models \
+          -w /workspace \
+          tensorflow/tensorflow:latest-gpu tail -f /dev/null
+          docker exec eval_container python workspace/src/image-classification-continuous-x/evaluate_model.py
+
+          docker stop eval_container
 
   redeploy:
     runs-on: node-0
-    # train for now
-    needs: train
-    # needs: evaluate
-
+    needs: evaluate
     # fix accuracy threshold and other conditions
     if: success()
     steps:
