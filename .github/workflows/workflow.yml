@@ -104,6 +104,7 @@ jobs:
           docker run -d --rm --name eval_container \
           -v food11_data:/tmp/content/Food-11 \
           -v saved_models:/tmp/temp_models \
+          -v model-to-deploy:/tmp/model_to_deploy
           -w /workspace \
           tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
@@ -121,6 +122,18 @@ jobs:
       - name: Install Dependencies
         run: |
           docker exec eval_container pip install -r workspace/src/image-classification-continuous-x/requirements_docker.txt
+
+      - name: Extract last model
+        run: |
+          docker exec eval_container bash -c '
+          cd /tmp/temp_models/operatorai-model-store/image-classification/
+          latest_dir=$(find "$(ls -d 2024* | grep -v "^versions$" | sort -r | head -n 1)" -type d -print | sort | tail -n 1)
+          echo "Latest directory: $latest_dir"
+          cd "$latest_dir"
+          rm -rf /tmp/model_to_deploy/*
+          mkdir -p /tmp/model_to_deploy
+          tar -xzf artifacts.tar.gz -C /tmp/model_to_deploy
+          '
 
       - name: Run evaluate script
         run: |

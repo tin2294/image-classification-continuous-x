@@ -1,14 +1,15 @@
 import tensorflow as tf
-import numpy as np
-import json
 import os
 
-# Paths
-MODEL_PATH = os.getenv("MODEL_PATH", "/tmp/temp_models/latest_model.keras")
-DATASET_PATH = os.getenv("DATASET_PATH", "/tmp/content/Food-11/validation")
-METRICS_OUTPUT_PATH = os.getenv("METRICS_OUTPUT_PATH", "/tmp/temp_models/evaluation_metrics.txt")
+MODEL_DIR = "/tmp/model_to_deploy"
 
-# Load the model
+keras_files = [f for f in os.listdir(MODEL_DIR) if f.endswith(".keras")]
+
+if len(keras_files) != 1:
+    raise ValueError(f"Expected exactly one .keras file in {MODEL_DIR}, but found {len(keras_files)}.")
+
+MODEL_PATH = os.path.join(MODEL_DIR, keras_files[0])
+
 print(f"Loading model from {MODEL_PATH}...")
 model = tf.keras.models.load_model(MODEL_PATH)
 print("Model loaded successfully.")
