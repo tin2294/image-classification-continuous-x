@@ -79,7 +79,8 @@ jobs:
           echo "Extracted evaluation_loss: $EVALUATION_LOSS"
           echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
           echo "LOSS=$EVALUATION_LOSS" >> $GITHUB_ENV
-  
+
+      # TO DO: move this to evaluate if deploy=true -> potentially only rsync the model that was evaluated instead of all modelstore
       - name: Rsync model store from GPU to Node-0
         run: |
           docker run --rm -v saved_models:/volume -v /tmp:/backup busybox tar czf /backup/volume_backup.tar.gz -C /volume .
@@ -146,7 +147,7 @@ jobs:
   redeploy:
     runs-on: node-0
     needs: evaluate
-    # fix accuracy threshold and other conditions
+    # TO DO: change to deploy if deploy=true
     if: success()
     steps:
       - name: Set up Python

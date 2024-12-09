@@ -52,6 +52,8 @@ plot_confusion_matrix(cm, class_labels, CONFUSION_MATRIX_FILE)
 print(f"Confusion matrix saved to {CONFUSION_MATRIX_FILE}")
 
 print(f"Accuracy: {accuracy}")
+
+# TO DO: Add more conditions and set variable deploy=true in order to trigger in GH actions
 if accuracy > ACCURACY_THRESHOLD:
     print("Model meets the performance threshold. Ready for deployment!")
 else:
