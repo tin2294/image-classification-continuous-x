@@ -17,13 +17,13 @@ jobs:
       - name: Manage Dataset Volume and Download
         id: manage_dataset
         run: |
-          docker run -d --rm --name tensorflow_container \
+          docker run -d --rm --name training_container \
             -v food11_data:/tmp/content/Food-11 \
             -v saved_models:/tmp/temp_models \
             -w /workspace \
             tensorflow/tensorflow:latest-gpu tail -f /dev/null
 
-            docker exec tensorflow_container bash -c "
+            docker exec training_container bash -c "
             apt-get update && apt-get install -y git;
             if [ -d 'workspace/src/image-classification-continuous-x' ]; then
               echo 'Repository already exists. Updating...';
@@ -34,12 +34,12 @@ jobs:
             fi
           "
 
-          if docker exec tensorflow_container bash -c "[ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]"; then
+          if docker exec training_container bash -c "[ -d '/tmp/content/Food-11' ] && [ \"\$(ls -A /tmp/content/Food-11)\" ]"; then
             echo "Volume 'food11_data' already contains data. Skipping download."
           else
             echo "Volume 'food11_data' is empty. Downloading dataset."
 
-            docker exec tensorflow_container bash -c "
+            docker exec training_container bash -c "
               set -e;
               echo 'Downloading and setting up dataset...';
               mkdir -p /tmp/content/Food-11 && \
@@ -54,27 +54,27 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          docker exec tensorflow_container pip install -r workspace/src/image-classification-continuous-x/requirements.txt
+          docker exec training_container pip install -r workspace/src/image-classification-continuous-x/requirements.txt
 
       - name: Organize Data
         run: |
-          if docker exec tensorflow_container bash -c "[ -d '/tmp/content/Food-11/training/class_00' ]"; then
+          if docker exec training_container bash -c "[ -d '/tmp/content/Food-11/training/class_00' ]"; then
             echo "Dataset is already organized. Skipping organization step."
           else
             echo "Dataset is not organized. Organizing now..."
-            docker exec tensorflow_container python workspace/src/image-classification-continuous-x/organize_data.py
+            docker exec training_container python workspace/src/image-classification-continuous-x/organize_data.py
           fi
 
       - name: Run Training Script
         run: |
-          docker exec tensorflow_container python workspace/src/image-classification-continuous-x/model_train.py
+          docker exec training_container python workspace/src/image-classification-continuous-x/model_train.py
         env:
           STORAGE_PATH: /home/cc/models
 
       - name: Set Accuracy as Environment Variable
         run: |
-          EVALUATION_ACCURACY=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_accuracy" | cut -d' ' -f2)
-          EVALUATION_LOSS=$(docker exec tensorflow_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_loss" | cut -d' ' -f2)
+          EVALUATION_ACCURACY=$(docker exec training_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_accuracy" | cut -d' ' -f2)
+          EVALUATION_LOSS=$(docker exec training_container cat /tmp/temp_models/evaluation_metrics.txt | grep "evaluation_loss" | cut -d' ' -f2)
           echo "Extracted evaluation_accuracy: $EVALUATION_ACCURACY"
           echo "Extracted evaluation_loss: $EVALUATION_LOSS"
           echo "ACCURACY=$EVALUATION_ACCURACY" >> $GITHUB_ENV
@@ -88,7 +88,7 @@ jobs:
 
       - name: Stop Container
         run: |
-          docker stop tensorflow_container
+          docker stop training_container
 
   evaluate:
     runs-on: gpu-p100

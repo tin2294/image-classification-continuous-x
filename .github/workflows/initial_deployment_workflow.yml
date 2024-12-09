@@ -13,9 +13,6 @@ jobs:
     runs-on: node-0
 
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v3
-
       - name: Deploy application
         run: |
           docker build -t node-0:5000/ml-app:latest app
