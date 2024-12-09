@@ -2,11 +2,10 @@ name: Continuous X Workflow
 
 on:
   push:
-    # NOT TRIGGERING FOR NOW
-    # branches:
-    #   - main
-    # paths:
-    #     - 'model_train.py'
+    branches:
+      - main
+    paths:
+        - 'model_train.py'
     #     - 'utils.py'
 jobs:
   train:
