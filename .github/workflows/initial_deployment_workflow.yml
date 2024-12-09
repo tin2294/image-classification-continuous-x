@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Deploy application
         run: |
-          docker build -t node-0:5000/ml-app:latest /home/cc/image-classification-continuous-x
+          docker build --network host --no-cache -t node-0:5000/ml-app:latest /home/cc/image-classification-continuous-x
           docker push node-0:5000/ml-app:latest
 
           kubectl apply -f ~/image-classification-continuous-x/deploy_k8s/deployment_k8s.yaml
