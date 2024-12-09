@@ -15,7 +15,7 @@ jobs:
     steps:
       - name: Deploy application
         run: |
-          docker build -t node-0:5000/ml-app:latest app
+          docker build -t node-0:5000/ml-app:latest $GITHUB_WORKSPACE/app
           docker push node-0:5000/ml-app:latest
 
           kubectl apply -f ~/image-classification-continuous-x/deploy_k8s/deployment_k8s.yaml
