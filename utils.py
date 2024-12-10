@@ -151,7 +151,6 @@ def plot_training_history(hist, filename='training_history.png'):
     plt.savefig(filename)
     plt.close()
 
-
 def save_model(model, base_dir):
   storage_path = "/tmp/temp_models/"
   model_store = ModelStore.from_file_system(root_directory=storage_path)
