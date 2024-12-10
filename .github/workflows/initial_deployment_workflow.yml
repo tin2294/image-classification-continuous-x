@@ -15,10 +15,8 @@ jobs:
     steps:
       - name: Deploy application
         run: |
-          docker build --network host --no-cache -t node-0:5000/ml-app:latest /home/cc/image-classification-continuous-x
-          docker push node-0:5000/ml-app:latest
-
-          kubectl apply -f ~/image-classification-continuous-x/deploy_k8s/deployment_k8s.yaml
+          docker build --network host --no-cache -t node-0:5000/ml-app:${{ github.event.inputs.deploy_version }} /home/cc/k8s-ml/app
+          docker push node-0:5000/ml-app:${{ github.event.inputs.deploy_version }}
 
       - name: Wait for deployment to complete
         run: |
@@ -26,7 +24,7 @@ jobs:
 
       - name: Display Docker Logs
         run: |
-            docker logs $(docker ps -q -f ancestor=node-0:5000/ml-app:latest) || echo "No Docker container running for ml-app"
+            docker logs $(docker ps -q -f ancestor=node-0:5000/ml-app:${{ github.event.inputs.deploy_version }}) || echo "No Docker container running for ml-app"
     
       - name: Display Kubernetes Pod Status
         run: |
