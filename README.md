@@ -15,12 +15,11 @@ A typical MLOps lifecycle consists of:
 6. Continuous monitoring: tracking the performance and efficiencty of the deployed models.
 7. Data and model management: ensuring that the model pipelines are auditable, traceable, compliant and reusable.
 
+<img src="images-readme/MLOps-lifecycle-google-manifesto.png" alt="mlops-lifecycle" width="300"/>
+
+[^1]: Google Cloud. (n.d.). Practitioner's Guide to MLOps. Google Cloud Whitepaper. [Link](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf)
+
 ![Alt Text](images-readme/MLOps-lifecycle-google-manifesto.png)
-
-
-![Alt Text](https://github.com/tin2294/image-classification-continuous-x/blob/main/images-readme/MLOps-lifecycle-google-manifesto.png)
-
-
 
 ### Continuous Integration
 #### Containerization
