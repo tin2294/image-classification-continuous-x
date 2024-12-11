@@ -4,6 +4,24 @@ This project explores the building of a Continuous X (CI/CD, Continuous Training
 
 ## 1. Background
 ### Continuous X Principles
+Machine learning operations, or MLOps, is the set of practices in an organization in charge of managing the lifecycle of machine learning models. This includes the automatization of the different tasks that allow for models to adapt to changes in data, business requirements or code. Continuous X or Continuous Machine Learning, CML, specifically ensures that that models are deployed efficiently and that the risks are managed appropriately.
+
+A typical MLOps lifecycle consists of:
+1. Machine learning development: experimenting and building a reproducible training pipeling that includes data preparation, training and evaluation.
+2. Training operationalization: automating the testing, deployment and packaging of the model pipelines.
+3. Continuous training: repeatedly executing the training workflow in response to changes in data, code or scheduled intervals.
+4. Model deployment: packaging, testing and deploying models to production environments for experimentation and serving.
+5. Prediction serving: serving deployed models in production for real-time inference.
+6. Continuous monitoring: tracking the performance and efficiencty of the deployed models.
+7. Data and model management: ensuring that the model pipelines are auditable, traceable, compliant and reusable.
+
+![Alt Text](images-readme/MLOps-lifecycle-google-manifesto.png)
+
+
+![Alt Text](https://github.com/tin2294/image-classification-continuous-x/blob/main/images-readme/MLOps-lifecycle-google-manifesto.png)
+
+
+
 ### Continuous Integration
 #### Containerization
 ### Continuous Delivery and Deployment
@@ -391,7 +409,20 @@ The steps of this job are the following:
     ```
 
 
-### DEMO
+### Continuous X Workflow Demo
+When we make any changes to `model_train.py` or `utils.py`, which are the files that are directly related to our model, on our codebase and push them to the remote repository on the `main` branch, the `Continuous X Workflow` will be triggered automatically.
+
+#### Successful Run:
+
+Eventually, what we want to achieve is, at the very least, this screen:
+
+        #### ADD CONT X WORKFLOW SUCCESS SCREENSHOT
+
+        #### ADD CONFUSION MATRIX SCREENSHOT AND EVALUATION METRICS
+
+
+
+#### Unsuccessful Run:
 
 ## 3. Future Improvements
 * Continuous monitoring
