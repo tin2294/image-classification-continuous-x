@@ -5,7 +5,7 @@ from utils import create_image_generator, plot_confusion_matrix
 
 MODEL_DIR = "/tmp/model_to_deploy"
 OUTPUT_FILE = "/tmp/temp_models/evaluation_metrics.txt"
-# TO DO: Fix threshold when model is improved
+DEPLOY = "/tmp/temp_models/deploy.txt"
 ACCURACY_THRESHOLD = 0.1
 CONFUSION_MATRIX_FILE = "/tmp/temp_models/confusion_matrix.pdf"
 EVALUATION_DIR = "/tmp/content/Food-11/evaluation"
@@ -53,8 +53,8 @@ print(f"Confusion matrix saved to {CONFUSION_MATRIX_FILE}")
 
 print(f"Accuracy: {accuracy}")
 
-# TO DO: Add more conditions and set variable deploy=true in order to trigger in GH actions
-if accuracy > ACCURACY_THRESHOLD:
-    print("Model meets the performance threshold. Ready for deployment!")
-else:
-    print("Model did not meet the performance threshold. Deployment aborted.")
+deploy = "true" if accuracy >= ACCURACY_THRESHOLD else "false"
+print(f"Setting deploy to {deploy}")
+
+with open(DEPLOY, 'w') as f:
+    f.write(deploy)

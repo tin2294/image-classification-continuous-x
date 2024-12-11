@@ -120,7 +120,12 @@ jobs:
         run: |
           docker exec eval_container python workspace/src/image-classification-continuous-x/evaluate_model.py
 
-      # TO DO: move this to evaluate and if deploy=true -> potentially only rsync the model that was evaluated instead of all modelstore
+      - name: Set Accuracy as Environment Variable
+        run: |
+          DEPLOY=$(docker exec tensorflow_container cat /tmp/temp_models/deploy.txt)
+          echo "Deploy variable: $DEPLOY"
+          echo "DEPLOY=$DEPLOY" >> $GITHUB_ENV
+
       - name: Rsync modelstore from GPU to node-0
         run: |
           docker run --rm -v saved_models:/volume -v /tmp:/backup busybox tar czf /backup/volume_backup.tar.gz -C /volume .
@@ -133,8 +138,7 @@ jobs:
   redeploy:
     runs-on: node-0
     needs: evaluate
-    # TO DO: change to deploy if deploy=true
-    if: success()
+    if: ${{ env.DEPLOY == 'true' }}
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
