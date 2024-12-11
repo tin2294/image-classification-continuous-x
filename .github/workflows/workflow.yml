@@ -7,12 +7,11 @@ on:
     # paths:
     #     - 'model_train.py'
     #     - 'utils.py'
+env:
+  DEPLOY: 'false'
 jobs:
   train:
     runs-on: gpu-p100
-    env:
-      DATASET_EXISTS: ''
-
     steps:
       - name: Manage Dataset Volume and Download
         id: manage_dataset
@@ -121,10 +120,11 @@ jobs:
           docker exec eval_container python workspace/src/image-classification-continuous-x/evaluate_model.py
 
       - name: Set Accuracy as Environment Variable
+        id: deploy-var
         run: |
           DEPLOY=$(docker exec tensorflow_container cat /tmp/temp_models/deploy.txt)
           echo "Deploy variable: $DEPLOY"
-          echo "DEPLOY=$DEPLOY" >> $GITHUB_ENV
+          echo "DEPLOY=$DEPLOY" >> $GITHUB_OUTPUT
 
       - name: Rsync modelstore from GPU to node-0
         run: |
@@ -134,11 +134,13 @@ jobs:
       - name: Stop container
         run: |
           docker stop eval_container
+    outputs:
+      DEPLOY: ${{ steps.deploy-var.outputs.DEPLOY }}
 
   redeploy:
     runs-on: node-0
     needs: evaluate
-    if: ${{ env.DEPLOY == 'true' }}
+    if: needs.evaluate.outputs.DEPLOY == 'true'
     steps:
       - name: Set up Python
         uses: actions/setup-python@v2
