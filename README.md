@@ -6,7 +6,7 @@ This project explores the building of a Continuous X (CI/CD, Continuous Training
 ### Continuous X Principles
 Machine learning operations, or MLOps, is the set of practices in an organization in charge of managing the lifecycle of machine learning models. This includes the automatization of the different tasks that allow for models to adapt to changes in data, business requirements or code. Continuous X or Continuous Machine Learning, CML, specifically ensures that that models are deployed efficiently and that the risks are managed appropriately.
 
-A typical MLOps lifecycle consists of:
+A typical MLOps lifecycle, which can be seen on figure 1, consists of:
 1. Machine learning development: experimenting and building a reproducible training pipeling that includes data preparation, training and evaluation.
 2. Training operationalization: automating the testing, deployment and packaging of the model pipelines.
 3. Continuous training: repeatedly executing the training workflow in response to changes in data, code or scheduled intervals.
@@ -15,7 +15,8 @@ A typical MLOps lifecycle consists of:
 6. Continuous monitoring: tracking the performance and efficiencty of the deployed models.
 7. Data and model management: ensuring that the model pipelines are auditable, traceable, compliant and reusable.
 
-<img src="images-readme/MLOps-lifecycle-google-manifesto.png" alt="mlops-lifecycle" width="500"/>[^1]
+<img src="images-readme/MLOps-lifecycle-google-manifesto.png" alt="mlops-lifecycle" width="500"/>
+**Figure 1**: The MLOps lifecycle[^1]
 
 [^1]: Google Cloud. (n.d.). Practitioner's Guide to MLOps. Google Cloud Whitepaper. [Link](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf)
 
