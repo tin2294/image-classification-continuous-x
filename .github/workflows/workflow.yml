@@ -122,7 +122,7 @@ jobs:
       - name: Set Accuracy as Environment Variable
         id: deploy-var
         run: |
-          DEPLOY=$(docker exec tensorflow_container cat /tmp/temp_models/deploy.txt)
+          DEPLOY=$(docker exec eval_container cat /tmp/temp_models/deploy.txt)
           echo "Deploy variable: $DEPLOY"
           echo "DEPLOY=$DEPLOY" >> $GITHUB_OUTPUT
 
