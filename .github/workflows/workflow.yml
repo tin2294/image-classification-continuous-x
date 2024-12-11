@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-    paths:
-        - 'model_train.py'
-        - 'utils.py'
+    # paths:
+    #     - 'model_train.py'
+    #     - 'utils.py'
 jobs:
   train:
     runs-on: gpu-p100
