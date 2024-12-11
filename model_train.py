@@ -64,7 +64,10 @@ directory_path = os.path.dirname(file_path)
 os.makedirs(directory_path, exist_ok=True)
 
 with open(file_path, "w") as f:
-    f.write(f"evaluation_accuracy: {evaluation_accuracy}\n")
-    f.write(f"evaluation_loss: {evaluation_loss}\n")
+    f.write(f"training_accuracy: {evaluation_accuracy}\n")
+    f.write(f"training_loss: {evaluation_loss}\n")
+
+print(f"Training accuracy: {evaluation_accuracy}")
+print(f"Training loss: {evaluation_loss}")
 
 print(f"Evaluation metrics written to: {file_path}")
