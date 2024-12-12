@@ -6,7 +6,7 @@ from utils import create_image_generator, plot_confusion_matrix
 MODEL_DIR = "/tmp/model_to_deploy"
 OUTPUT_FILE = "/tmp/temp_models/evaluation_metrics.txt"
 DEPLOY = "/tmp/temp_models/deploy.txt"
-ACCURACY_THRESHOLD = 0.1
+ACCURACY_THRESHOLD = 0.9
 CONFUSION_MATRIX_FILE = "/tmp/temp_models/confusion_matrix.pdf"
 EVALUATION_DIR = "/tmp/content/Food-11/evaluation"
 INPUT_IMG_SIZE = 112
