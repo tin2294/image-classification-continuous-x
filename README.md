@@ -1,12 +1,12 @@
 # Continuous X - ML
 
-This project explores the building of a Continuous X (CI/CD, Continuous Training and Continuous Monitoring) pipeline for a Machine Learning app.
+This project explores the implementation of a Continuous X (CI/CD, Continuous Training and Continuous Monitoring) pipeline for a Machine Learning app. In our example implementation, our model classifies food images into different categories (Bread, Dairy product, Dessert, Egg, Fried food, Meat, Noodles/Pasta, Rice, Seafood, Soup, Vegetable/Fruit).
 
 ## 1. Background
 ### Continuous X Principles
 Machine learning operations, or MLOps, is the set of practices in an organization in charge of managing the lifecycle of machine learning models. This includes the automatization of the different tasks that allow for models to adapt to changes in data, business requirements or code. Continuous X or Continuous Machine Learning, CML, specifically ensures that that models are deployed efficiently and that the risks are managed appropriately.
 
-A typical MLOps lifecycle, which can be seen on figure 1, consists of:
+A typical MLOps lifecycle consists of:
 1. Machine learning development: experimenting and building a reproducible training pipeling that includes data preparation, training and evaluation.
 2. Training operationalization: automating the testing, deployment and packaging of the model pipelines.
 3. Continuous training: repeatedly executing the training workflow in response to changes in data, code or scheduled intervals.
@@ -21,18 +21,156 @@ __Figure 1__: The MLOps lifecycle [^1]
 
 [^1]: Google Cloud. (n.d.). Practitioner's Guide to MLOps. Google Cloud Whitepaper. [Link](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf)
 
+Continuous Machine Learning involves different steps, which we will dig into in the following sections. These steps are:
+* __Continuous Training__: automating the process of training the model based on changes on business needs, events, or manual requests. Tracking is very important in order to trace datasets, debug, reproduce and manage artifacts and metadata. This step includes data ingestion, data validation, data transformation, model training and tuning, model evaluation, model validation and model registration/versioning.
+* __Continuous Integration__: automating the integration of code changes by collaborators in the project, running unit tests, validating the training pipeline in order to ensure compatibility with the rest of the codebase and functionality.
+* __Continuous Delivery and Deployment__: packaging and deploying models incrementally. We can manage environments to test in non-production ones to then, gradually expose the model to live traffic before a full production rollout. The strategy will depend on the decisions of the team.
+* __Continuous Monitoring__: tracking model performance in production in order to detect issues, such as a data drift (changes in input data) or concept drift (changes in data relationships). Other things to monitor include resource usage, latency, error rates or accuracy, using real-time data. Alerts can be set up prompting updates or retraining.
+
+Figure 2 shows a MLOps process that includes Continuous X in it.
+
+<img src="images-readme/MLOps-process-google-manifesto.png" alt="mlops-process" width="600"/>
+
+__Figure 2__: The MLOps process [^1]
+
+[^1]: Google Cloud. (n.d.). Practitioner's Guide to MLOps. Google Cloud Whitepaper. [Link](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf)
+
+Another aspect to keep in mind throughout the next sections is the MLOps principles. All end-to-end pipelines should follow these four key principles:
+1. Automation
+2. Reusability
+3. Reproducibility
+4. Manageability
+
+
 ### Continuous Integration
+Continuous Integration (CI) is a development strategy that allows for safer and speedier code deployment through frequent code commits. Whenever a commit is made, an automated build and testing workflow will be triggered, allowing for teams to detect and fix issues quickly. This strategy enhances collaboration in a software project.
+
+CI involves the following steps:
+* __Commit__: code changes are pushed to the repository.
+* __Build__: CI systems automatically build the application with the changes to ensure compatibility.
+* __Test__: automated test suite will be run to assess functionality, security and code quality (depending on what the developers set up).
+* __Inform__: developers will be given feedback as the tests conclude in order to alert of issues.
+* __Integrate__: if successfully passing tests, the changes are merged into the main branch of the code.
+* __Deploy__: CI often works with continuous deployment (CI/CD) for automated deployments with the changes.
+
+Specifically, for Machine Learning, code compatibility and quality to check for can include data-handling functions, feature engineering functions or model training/evaluation functions. So this would not involve assessing the model specifically, but ensuring that the code employed to create and manage the model and the inputs and outputs of it are suitable and correct.
+
+When it comes to testing scopes, there are many options, such as, unit tests (to test individual methods and classes), integration (to test pipeline integration points, such as between data processing), functional (to test that business requirements are met), end-to-end, acceptance, performance, smoke (to test that the most critical functions of a program work correctly) or A/B. The speed and granularity needs of the team will ultimately decide which options to implement. Keep in mind that tests should ultimately be robust and not frequently break.
+
+Figure 3 shows a CI workflow that goes from developers committing changes, to building and testing and integrating into the code base.
+
+<img src="images-readme/CI-workflow.png" alt="CI" width="500"/>
+
+__Figure 3__: The CI process [^2]
+
+[^2]: CircleCI. (n.d.). *Continuous integration*. Retrieved October 8, 2024. [Link](https://circleci.com/continuous-integration/)
+
 #### Containerization
+Before introducing containerization, we should understand virtualization. Virtualization creates virtual versions of physical IT resources, such as storage, hardware, or networking, allowing multiple users or environments to share a machine's capacity and resources. There are two main types of virtualization: *Virtual Machines (VMs)* and *Containers*.
+
+Virtual Machines, replicate entire operating systems, while containers bundle applications with their dependencies, sharing the host OS kernel for better efficiency and speed.
+
+Containers facilitate portability by isolating applications from the host system, making it easier to develop once and run anywhere.
+
+Therefore, containerization is a method of packaging an application, along with its dependencies, into a single unit called *container*. This allows the application to consistently run across different environments regardless of the underlying hardware or OS.
+
+* __Docker__
+
+    When speaking of containerization, we must mention Docker. Docker is the most popular technology for containerization. It is an open source tool for building, deploying and managing containerized applications.
+    
+    In machine learning, Docker becomes very valuable as it isolates environments, ensuring that applications can be ported and reproduced. Docker encapsulates the entire stack down to the host OS, making the setup process smoother, avoiding compatibility issues and promoting consistency across machines, which is particularly beneficial for collaboration in machine learning projects.
+    
+    Useful terminology:
+    * __Dockerfile__: a text file with instructions on how to build the Docker image.
+    * __Docker Images__: templates that include the source code, installations and dependencies needed to run a container. They are made up of layers, each one depending on the one below.
+    * __Docker Registry__: a repository for storing and sharing Docker images.
+    * __Docker Engine__: the core system that manages containerization, which consists of a server, *Docker daemon*, and a client, *Docker CLI*.
+
 ### Continuous Delivery and Deployment
+
+>“Continuous Delivery is the ability to get changes of all types — including new features, configuration changes, bug fixes, and experiments — into production, or into the hands of users, safely and quickly in a sustainable way”.
+>
+>-- Jez Humble and Dave Farley [^3]
+
+[^3]: **Fowler, M.** (2010). *Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation*. Addison-Wesley Professional.
+
+Continuous Delivery consists of automating the end-to-end process of deploying software from version control into production through a reliable and repeatable process, passing all stages of testing, approvals and deployment in different environments.
+
+In the context of machine learning, this is the part of continuous X, where changes are actually deployed, ensuring that new versions of models are continuously tested, integrated and released. This occurs in small and safe increments, commits, allowing for visibility and control. 
+The deployment should be able to be delivered into production at any time. CD in machine learning is about a system, ML training pipeline, that should automatically deploy another service (model prediction service) or roll back changes from a model.
+
+Continuous deployment for machine learning include automating the training of models, the collection of metrics and the evaluation of model performance; integrating the automation of data pipelines; automating testing and validation step; and, scaling infrastructure.
+
+Deployment can involve different complex scenarios:
+- Multiple models: using different models for the same task, deployed as separate services for easier consumption.
+- Shadow models: deploying a new model alongside the old one to compare their performance.
+- Competing models: running different model versions to find the best performer.
+- Online learning models: models that continuously improve with new data, requiring versioning of both training and production data.
+
+To manage the whole software delivery process, we need orchestration tools, such as Kubernetes (specific to container orchestration). These tools help automate deployment pipelines for building, testing and releasing software to production. In machine learning, this orchestration is needed to handle infrastructure provisioning, training, and evaluating multiple models, and deploying the models to production. These tools can help with rollback processes as well, which can be useful, especially if a model performs poorly in production. Orchestration ensures that all the processes involved in the machine learning life cycle are properly coordinated and executed.
+
 ### Continuous Training
+This part of continuous X refers to the ongoing process of retraining models with new data or model changes to ensure that they remain accurate and relevant over time. This continuous training involves regularly updating the model in order to adapt to changes in the model's environment. This is especially important because data evolves and models can degrade in performance. The trigger can be a data change, amodel change, a code change or manual.
+
+Over time, a model can become stale due to changes in the real world. Factors such as data drift (change in the production data distribution from the data used for training), concept drift (the connotation behind a target variable has changed from what it was when the model was trained, so a positive result can now mean something different) or both can occur.
+
+There are also different approaches when it comes to what to retrain:
+- Continual learning (lifelong training): continuously updates the model as new data becomes available and the adjustments are incremental. The knowledge is retrained. This approach is more vulnerable to concept drift.
+- Transfer learning: an existing model is used as a foundation for retraining a new one. It is also incremental. The knowledge is transferred and can train the model on a new task. This approach is more vulnerable to data drift.
+
+Another aspect is to distinguish between *offline learning* and *online learning*.
+- Offline learning or batch learning: this is the traditional approach to machine learning. The model is trained on a fixed dataset all at once, and once deployed, learning does not continue. Retraining will involve starting from scratch with updated data.
+- Online learning or incremental learning: this involves continuously training the model as new data is introduced. It can adapt as new data flows in. This approach is useful for systems with real-time data and can also be more cost effective, helping prevent data drift.
+
+The whole continuous X process is an ongoing cycle. At the end of deploying and monitoring model performance, we will proceed to retrain in order to ensure that the quality of the model that is in production is up to date.
+
 ### Continuous Monitoring
+This refers to the ongoing tracking and evaluation of the performance of the machine learning models that are in production to ensure that they continue to perform as expected. Continuous monitoring helps identify issues in production or unexpected changes in system behavior. It focuses on the behavior on the model rather than on software health.
+
+Key things that can be monitored include:
+- Model performance, using metrics and logging decisions to choose the best models.
+- Data issues and threats, as dynamic feature pipelines and workflows can introduce inconsistencies and errors that can degrade the model's performance.
+- Explainability of model decisions.
+- Bias, as ML models can amplify biases or introduce new ones, so detecting and addressing them is essential for fairness and reliability.
+- Drift in concept or data.
+
+<img src="images-readme/model-health.png" alt="model-health" width="500"/>
+
+__Figure 4__: ML model health [^4]
+
+[^4]: *MLOps Guide.* Retrieved from [MLOps Guide: Monitoring](https://mlops-guide.github.io/MLOps/Monitoring/#:~:text=Machine%20Learning%20models%20are%20unique,that%20it%20performs%20as%20expected).
+
+
+The goals of continuous monitoring are:
+- Issue detection and alerting.
+- Root cause analysis (monitoring should help pinpoint the cause of an issue).
+- Machine learning model behavior analysis (we should be able to get insights into the user's behavior and how they interact with the model).
+- Action triggers (we can retrain, rollback or reprocess data under certain conditions).
+- Performance visibility (monitoring should record metrics for future analysis).
+ 
+There are multiple tools that can help with continuous monitoring, such as Evidently, MLflow or Neptune.
 
 ## 2. Implementation
 ### Overview
 The main goal of this project is to build a full pipeline for a machine learning app to continuously train new model modifications, continuously test and evaluate the modified model, and, if certain conditions are met, continuously deploy the accepted model. Additionally, continuous monitoring would also be occurring, which is not in the scope of this project.
 
-        #### ADD SCREENSHOTS OF DIAGRAM
-        #### Explain storage and Docker and Kubernetes
+In figure 5, we can see an overview of what the implementation of this project looks like. Changes made to the remote repository on GitHub that affect the model (changes in `model_train.py` and `utils.py`) will trigger step 1 in the workflow, `Continuous train`. If successful, we will move on to `continuous test`. Otherwise, we will have to make modifications and trigger the process again. If we pass `continuous test`, we can proceed to `continuous deploy`. Here, we also picture `continuous monitoring`, since it would be the next logical step once the model is in production. However, it is not implemented in this project so it appears in the diagram for illustration purposes.
+
+As we can see on the diagram, training and evaluation occur in the GPU server, which we set up on Chameleon's Jupyter environment, and deployment occurs on node-0, also set up on Chameleon. Therefore, everything is run on our own resources as opposed to GitHub's own resources.
+
+In terms of storage, during training and evaluation, I used Docker volumes to persist model storage across different jobs. The deployment step does not need to store but will need to access the latest accepted model, so we will transfer the resource from the GPU server to node-0.
+
+Deployment occurs on Kubernetes using the Docker image created with the latest model. Kubernetes allows us to orchestrate the containers for the deployment of our app.
+
+We will be able to see the progress and status of our jobs on GitHub Actions.
+
+<img src="images-readme/contx-diagram.png" alt="contx-diagram" width="800"/>
+
+__Figure 5__: Continuous X Project Diagram [^5]
+
+[^5]: Continuous X Project Diagram. Modified from Professor Fraida Fund's original diagram. Retrieved from [Excalidraw](https://app.excalidraw.com/l/2qkLiEmqaLK/2fvXLZ9UaXT).
+
+
 
 ### Expectations
 What is expected to happen with this pipeline is that, if any changes are made to our model and pushed to our remote repository on GitHub, supposing that we collaborate with other teammates on this project, the pipeline will be triggered to retrain with the new changes, then evaluating the model and finally determining whether deployment should happen or not.
@@ -42,7 +180,7 @@ The project contains two workflows, which can be seen [here](https://github.com/
 1. Deployment Workflow: we will trigger this manually in order to trigger a deployment, for instance, the initial deployment.
 2. Continuous X Workflow: this is triggered automatically whenever changes are made to the codebase.
 
-        #### ADD SCREENSHOT OF GITHUB WITH WORKFLOWS
+<img src="images-readme/both-workflows-gh.png" alt="workflows" width="600"/>
 
 Whenever there is a change in the codebase that is pushed to remote, the following jobs occur:
 1. The `train` script will be triggered. This will run the python script for training the model.
@@ -53,15 +191,15 @@ Should the model not pass the tests, a redeployment will not occur. What could n
 
 1. A job failed, so this does not necessarily have anything to do with the model. GitHub actions will detail the step the job failed on and changes will have to be made and pushed again to rerun the workflow. Note that if the job failed while the container was already started, the container will have to be stopped on the GPU host terminal.
 
+    <img src="images-readme/failed-job.png" alt="failed-job" width="500"/>
+
     ```
     # If this occurred during training:
     $ docker stop training_container
-
+    
     # If this occurred during evaluation:
     $ docker stop evaluation_container
     ```
-
-        #### ADD SCREENSHOT OF FAILED JOB
 
 2. The model does not meet the thresholds or conditions set. In this case, we would have to make model changes in order for the model to be acceptable for deployment and push them again.
 
@@ -106,10 +244,14 @@ Should the model not pass the tests, a redeployment will not occur. What could n
 Our pipeline is built on GitHub actions, which are triggered upon modifications to the model code and pushes to remote. When this occurs, we want the jobs to be run on the hosts that we have set up on points 1 and 2. In order to do so, we need to have our hosts ready to take the jobs that come from GitHub actions, so they need to be _listening_.
     
     You will need to go [here](https://github.com/tin2294/image-classification-continuous-x/settings/actions/runners) and click on `New self-hosted runner` and select `Linux`:
+
+
+    <img src="images-readme/add-runner-button.png" alt="runner-button" width="600"/>
+
+
+    <img src="images-readme/configure-runner-gh.png" alt="configure-runner-gh" width="600"/>
     
-            #### ADD SCREENSHOTS
-    
-    The site will give you the following commands that tou will need to run on your GPU and node-0 terminals (your token will be different and each host will have a different runner so this will need to be done once per host):
+    The site will give you the following commands that you will need to run on your GPU and node-0 terminals (your token will be different and each host will have a different runner so this will need to be done once per host):
     
     ```
     # Create a folder
@@ -129,7 +271,7 @@ Our pipeline is built on GitHub actions, which are triggered upon modifications 
     * node-0
     * gpu-p100
 
-            #### ADD SCREENSHOTS
+        <img src="images-readme/configure-runner-terminal.png" alt="configure-runner-terminal" width="600"/>
 
     Now, every time we want to start the runners, on our terminal we need to make sure we are in the `actions-runner` folder and then run `run.sh`:
     
@@ -163,16 +305,18 @@ After the setup, we are ready to deploy. For this step, we will trigger the depl
 
 We will click on `Run workflow` and `Run workflow` again.
 
-        ### ADD SCREENSHOT OF BUTTON
+<img src="images-readme/trigger-initial-deploy-gh.png" alt="trigger-initial-deploy-gh" width="600"/>
 
 We can track the status of our workflow by clicking into the one just triggered:
 
-        ### ADD SCREENSHOT OF SUCCESSFUL DEPLOY
-        ### ADD SCREENSHOT OF WORFKLOW RUNNING
+<img src="images-readme/in-progress-deployment-wf.png" alt="in-progress-deployment-wf" width="600"/>
+
+<img src="images-readme/successful-deploy-wf.png" alt="successful-deploy-wf" width="600"/>
+
 
 At the end, logs are displayed to show that the deployment was successful and the URL of the application is displayed so we can access it to see the application.
 
-        ### ADD SCREENSHOT OF END OF FILE SUCCESSFULLY RUN
+<img src="images-readme/successful-image-change-ghactions.png" alt="successful-image-change-ghactions" width="600"/>
 
 ### Continuous X Workflow: Step-by-step walk-through
 
@@ -182,7 +326,7 @@ This script is divided into three jobs: `train`, `evaluate`, and `redeploy`.
 In this section, we will proceed to train the model in the `model_train.py` script. This is the first job of the workflow.
 As we can see on figure 1, this job runs on the self-hosted runner that we created on the GPU host with the tag `gpu-p100`:
 
-        #### ADD SCREENSHOT OF GPU TAG
+<img src="images-readme/train-runs-gpu.png" alt="train-runs-gpu" width="400"/>
 
 These are the steps that occur in this job:
 1. __`Manage Dataset Volume and Download`__:
@@ -335,7 +479,7 @@ Once training and evaluation have successfully happened and the model is deemed 
 
 This job runs on node-0 as can be seen here:
 
-        #### ADD SCREENSHOT OF node-0
+<img src="images-readme/redeploy-runs-node-0.png" alt="redeploy-runs-node-0" width="400"/>
 
 The steps of this job are the following:
 1. __`Set up Python`__: this step takes care of installing Python.
@@ -415,28 +559,132 @@ When we make any changes to `model_train.py` or `utils.py`, which are the files 
 
 Eventually, what we want to achieve is, at the very least, this screen:
 
-        #### ADD CONT X WORKFLOW SUCCESS SCREENSHOT
+<img src="images-readme/successful-workflow.png" alt="successful-workflow" width="600"/>
 
-        #### ADD CONFUSION MATRIX SCREENSHOT AND EVALUATION METRICS
 
+When we make a change in the code that triggers the continuous x workflow, the runner on the GPU host will be listening and will pick up the first job `train`.
+
+<img src="images-readme/listening-runner.png" alt="listening-runner" width="600"/>
+
+The steps on `train` will start running sequentially until they are all successful. The training script will print results such as:
+
+<img src="images-readme/train-results.png" alt="train-results" width="800"/>
+
+Once that happens, the workflow will move on to the `evaluate` job. The runner on the GPU host will also pick up this job and run it.
+
+This job will run and produce evaluation metrics and a confusion matrix that we can find saved in our volumes in the host.
+
+<img src="images-readme/evaluation-output.png" alt="evaluation-output" width="600"/>
+
+For instance, the evaluation_metrics.txt:
+
+<img src="images-readme/eval-metrics.png" alt="eval-metrics" width="600"/>
+
+
+If the `evalute` job concludes successfully and we pass the accuracy threshold. The `redeploy` job will be triggered. Once successfully redeployed, we can see the hand off from the old container to the new one.
+
+
+<img src="images-readme/image-replacement-container-handoff.png" alt="image-replacement-container-handoff" width="600"/>
+
+<img src="images-readme/old-container-describe.png" alt="old-container-describe" width="600"/>
+
+<img src="images-readme/new-image-container-kubernetes.png" alt="new-image-container-kubernetes" width="600"/>
+
+<img src="images-readme/container-handoff.png" alt="container-handoff" width="600"/>
 
 
 #### Unsuccessful Run:
+An unsuccessful run can occur due to a couple of reasons: a step in the workflow failed or the model accuracy threshold was not met.
+
+1. Step in workflow failed:
+
+    When this happens, we will see, when we enter the specific job on GitHub actions exactly the step it occurs at so that we can pinpoint the issue and fix it. In our example, in the `redeploy` job we can see that the `Build and push Docker image` step fails and the reason why. Now, I can go back to node-0 and clear up some space so that I can re-run this failed job or the whole workflow. We can retrigger this manually on the same page where we see the logs.
+
+    <img src="images-readme/failed-wf-step.png" alt="failed-wf-step" width="600"/>
+
+2. The model is not acceptable:
+
+    When this occurs, the jobs do not fail. Simply, redeploy will not occur because the accuracy threshold set in `evaluate_model.py` was not met. In this case, we will have to go back and improve our model and push those changes to remote in order to have the whole workflow run again and deploy this new model.
+
+    If accuracy falls below the threshold, the `redeploy` job will be skipped (I set the threshold high for this example to make `deploy='false'`:
+
+    <img src="images-readme/high-thresh.png" alt="high-thresh" width="600"/>
+
+    <img src="images-readme/deploy-false.png" alt="deploy-false" width="600"/>
+
+    If accuracy passes the threshold, the redeploy job is triggered (set the threshold low):
+
+    <img src="images-readme/low-thresh.png" alt="low-thresh" width="600"/>
+
+    <img src="images-readme/deploy-true.png" alt="deploy-true" width="600"/>
+
 
 ## 3. Future Improvements
-* Continuous monitoring
 * Add more tests
-* Set up alerts
-* Item 2a
-* Item 2b
-    * Item 3a
-    * Item 3b
 
-## Troubleshooting:
-* Stop containers when jobs fail
-* Restart runners when they fail + command to kill the runners when they freeze on the terminal
+    Right now, a basic working pipeline is set up for the model. However, we ideally want to watch out for more metrics other than accuracy, such as loss, bias, data drift or concept drift.
+* Add continuous monitoring
+
+    We are currently missing the last step in continuous X, which is monitoring. We want to monitor the performance of our deployed model and set up alerts to retrain or rollback.
+
+* Refactor and optimize some of the actions
+
+    Some of the steps could be optimized and reorganized in order to avoid unncessary computations.
+
+* Take advantage of live data
+
+    Ideally, we would want to continue learning from the data that the user inputs in the application when entering images to classify.
+
+* For the purposes of creating this pipeline and since the focus is not on training the model, its current performance is very low. So I would also like to improve the model.
+
+## Troubleshooting
+
+* If runners fail to pick up a job and the terminal freezes and we can no longer exit it we can run:
     ```
     ps aux | grep actions-runner
     ```
 
-## 4. Sources
+    And then, we would kill the `action-runners` processes:
+    ```
+    kill <id>
+    ```
+* If `train` or `evaluate` fail without the docker container stopping, we have to kill them for the next run to proceed:
+    ```
+    // training_container or eval_container
+    docker stop training_container
+    ```
+
+## References
+
+1. **TaskUs**. *Continuous Machine Learning: Insights from TaskUs*.  
+   Retrieved from [https://www.taskus.com/insights/continuous-machine-learning/](https://www.taskus.com/insights/continuous-machine-learning/)
+
+2. **Google Cloud**. *Practitioner's Guide to MLOps*. Google Cloud Whitepaper.  
+   Retrieved from [https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf](https://services.google.com/fh/files/misc/practitioners_guide_to_mlops_whitepaper.pdf)
+
+3. **MathWorks**. *What is MLOps?*  
+   Retrieved from [https://www.mathworks.com/videos/what-is-mlops-1706066104525.html](https://www.mathworks.com/videos/what-is-mlops-1706066104525.html)
+
+4. **Yan, E.** (2022, January 10). *Writing robust tests for data & machine learning pipelines*. Eugene Yan.  
+   Retrieved from [https://eugeneyan.com/writing/testing-pipelines/](https://eugeneyan.com/writing/testing-pipelines/)
+
+5. **CircleCI**. *Continuous integration*.  
+   Retrieved October 8, 2024, from [https://circleci.com/continuous-integration/](https://circleci.com/continuous-integration/)
+
+6. **Comet**. *Containerization of Machine Learning Applications*.  
+   Retrieved October 8, 2024, from [https://www.comet.com/site/blog/containerization-of-machine-learning-applications/](https://www.comet.com/site/blog/containerization-of-machine-learning-applications/)
+
+7. **Fowler, M.** *Continuous Delivery for Machine Learning*.  
+   Retrieved from [https://martinfowler.com/articles/cd4ml.html](https://martinfowler.com/articles/cd4ml.html)
+
+8. **Hegde, R.** (2021, March 9). *MLOps, Continuous Delivery, and Automation Pipelines in Machine Learning*. Medium.  
+   Retrieved from [https://medium.com/@rajuhegde2006/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning-093cd6e09fb3](https://medium.com/@rajuhegde2006/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning-093cd6e09fb3)
+
+9. **Evidently AI**. *Model Monitoring in Production*.  
+   Retrieved from [https://www.evidentlyai.com/ml-in-production/model-monitoring](https://www.evidentlyai.com/ml-in-production/model-monitoring)
+
+10. **MLOps Guide**. *Monitoring Machine Learning Models*.  
+    Retrieved from [https://mlops-guide.github.io/MLOps/Monitoring/#:~:text=Machine%20Learning%20models%20are%20unique,that%20it%20performs%20as%20expected.](https://mlops-guide.github.io/MLOps/Monitoring/#:~:text=Machine%20Learning%20models%20are%20unique,that%20it%20performs%20as%20expected.)
+
+11. **Neptune.ai**. *Retraining Models During Deployment: Continuous Training and Continuous Testing*.  
+    Retrieved from [https://neptune.ai/blog/retraining-model-during-deployment-continuous-training-continuous-testing](https://neptune.ai/blog/retraining-model-during-deployment-continuous-training-continuous-testing)

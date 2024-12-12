@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-    # paths:
-    #     - 'model_train.py'
-    #     - 'utils.py'
+    paths:
+        - 'model_train.py'
+        - 'utils.py'
 env:
   DEPLOY: 'false'
 jobs:
